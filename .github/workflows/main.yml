@@ -55,21 +55,21 @@ jobs:
             LOG_DIR="/home/ubuntu/app-logs"
             mkdir -p $LOG_DIR
             touch $LOG_DIR/app.log
-
-            # 기존 Docker 리소스 정리
-            sudo docker container prune -f
-            sudo docker image prune -af
-            sudo docker volume prune -f
-            sudo docker system prune -af --volumes
-
+      
+            # sudo 명령어에 비밀번호 자동 입력
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker container prune -f
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker image prune -af
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker volume prune -f
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker system prune -af --volumes
+      
             # 기존 컨테이너 종료 및 삭제
             CONTAINER_ID=$(sudo docker ps -q --filter "publish=80-8080")
             if [ ! -z "$CONTAINER_ID" ]; then
-              sudo docker stop $CONTAINER_ID
-              sudo docker rm $CONTAINER_ID
+              echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker stop $CONTAINER_ID
+              echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker rm $CONTAINER_ID
             fi
-
+      
             # Docker 이미지 업데이트 및 컨테이너 실행
-            sudo docker pull ${{ env.DOCKER_IMAGE_NAME }}:latest
-            sudo docker run --name app-container -d -p 60:60 -e TZ=Asia/Seoul \
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker pull ${{ env.DOCKER_IMAGE_NAME }}:latest
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker run --name app-container -d -p 70:3000 -e TZ=Asia/Seoul \
               -v $LOG_DIR/app.log:/app/logs/app.log ${{ env.DOCKER_IMAGE_NAME }}:latest
