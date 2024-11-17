@@ -7,6 +7,9 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    port: 3000,  // 원하는 포트 번호로 변경
+  },
   plugins: [
     vue(),
     vueJsx(),
