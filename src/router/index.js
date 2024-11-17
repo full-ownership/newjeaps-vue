@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import MainView from '../views/MainView.vue'
 import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
-import MapView from '../component/MapView.vue'
+import MapView from '../Component/MapView.vue'
 import NoticeView from '../views/NoticeView.vue'
 
 const routes = [

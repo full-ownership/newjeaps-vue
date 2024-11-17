@@ -23,7 +23,7 @@ COPY ./nginx.conf /etc/nginx/nginx.conf
 # 빌드된 Vue 애플리케이션을 Nginx의 html 폴더로 복사
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
-# 포트 80에서 실행
+# 포트 60에서 실행
 EXPOSE 60
 
 # Nginx 실행
