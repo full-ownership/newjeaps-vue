@@ -13,7 +13,7 @@ const filters = ['가격', '면적', '사용승인일', '층수'];
 </script>
 
 <template>
-  <div class="flex flex-row items-center w-full h-full pt-20">
+  <div class="flex flex-row items-center w-full h-[100vh] pt-20">
     <!-- 버튼 영역 -->
     <div class="bg-white w-20 h-full font-PretendardRegular text-xs border-r border-gray-200">
       <div class="flex flex-col mx-auto mt-2 w-16 h-16 bg-white rounded-lg items-center justify-center text-gray-800 hover:bg-gray-100 active:bg-pink-100 cursor-pointer">
@@ -46,7 +46,7 @@ const filters = ['가격', '면적', '사용승인일', '층수'];
     </div>
 
     <!-- 지도 및 필터 영역 -->
-    <div class="flex flex-col justify-start bg-yellow-200 w-full h-full">
+    <div class="flex flex-col justify-start w-full h-full">
       <!-- 필터 버튼 -->
       <div class="flex flex-row items-center m-0 bg-white h-14 border-b border-gray-200">
         <div v-for="(filter, index) in filters" :key="index" class="relative inline-block text-left ml-2">
@@ -66,25 +66,43 @@ const filters = ['가격', '면적', '사용승인일', '층수'];
       </div>
       <!-- 리스트와 지도 영역 -->
       <div class="flex flex-row h-full font-PretendardRegular text-gray-800">
-        <div class="flex flex-col bg-blue-200 h-full rounded-lg">
-          <div class="flex flex-row bg-pink-100 p-2 text-xs">
-            <p class="mr-1 ml-2 cursor-pointer">인기순</p>
-            <p class="mr-1 cursor-pointer">가격순</p>
-            <p class="mr-1 cursor-pointer">면적순</p>
+        <div class="flex flex-col h-full rounded-lg">
+          <div class="flex flex-row p-2 text-xs border-b-2">
+            <p class="mr-1 ml-2 cursor-pointer font-bold">인기순</p>
+            <p class="mr-1 cursor-pointer font-bold">가격순</p>
+            <p class="mr-1 cursor-pointer font-bold">면적순</p>
             <FilterButton></FilterButton>
           </div>
           <!-- 목록 영역 추가할 수 있습니다 -->
-          <div class="p-4">
+          <div class="p-2">
+            <CardView description="hi" @click="showFrame = !showFrame"></CardView>
             <CardView description="hi"></CardView>
-            <CardView description="hi"></CardView>
+
+            <!-- slide 효과 열리는 프레임 -->
+            <div v-show="showFrame" class="absolute top-40 bottom-0  left-[460px] w-72 bg-blue-500 h-72 p-1 shadow-lg rounded-md z-10
+            transition-all duration-2000 ease-in-out" :style="{'left': showFrame ? 'translateX(500px)' : 'translateX(0)'}">
+            <div class="bg-white w-full h-full"> 프레임입니다만 </div>
+          </div>
+
           </div>
         </div>
 
         <!-- 지도 표시 영역 -->
-        <div class="w-full bg-purple-100">
-          <KakaoMap :lat="coordinate.lat" :lng="coordinate.lng" width="100%"/>
+        <div class="relative w-full bg-purple-100">
+          <KakaoMap :lat="coordinate.lat" :lng="coordinate.lng" width="100%" height="100%"/>
+        <!-- 이동해야하는 자리 -->
         </div>
       </div>
+
     </div>
   </div>
 </template>
+<script>
+export default {
+  data() {
+    return {
+      showFrame: false, // Frame의 표시 여부를 관리하는 상태 변수
+    };
+  },
+};
+</script>

@@ -1,13 +1,13 @@
 <template>
-  <div class="w-96 mx-auto p-1 mb-2">
-    <div class="bg-white border border-gray-200 rounded-md shadow-sm flex flex-row py-2">
+  <div class="w-[360px] mx-auto p-1 mb-1">
+    <div class="bg-white border-b-2 flex flex-row py-3">
       <!-- 이미지 섹션 -->
        <div class="bg-pink-100 w-28 h-28 mx-2">
          이미지
        </div>
       <!-- 내용 섹션 -->
-      <div class="">
-        <span class="inline-flex items-center text-xs w-auto text-gray-600 border-2 border-gray-200 bg-white rounded-lg px-2 text-center">
+      <div class="ml-2">
+        <span class="inline-flex mb-1 items-center text-xxs w-auto text-gray-600 border-2 border-gray-200 bg-white rounded-lg px-2 text-center">
           아파트</span>
         <h5 class="text-lg font-bold text-gray-800 pl-1">아파트 이름</h5>
         <div class="pl-1">
@@ -16,14 +16,11 @@
           <span class="text-sm text-gray-600">
             동자동</span>
         </div>
-        <div class="text-xxs pl-1">
-          매매가
-        </div>
           <div class="pl-1">
             <span class="text-md">최소 </span>
             <span class="text-sm">00</span>
             <span class="text-md">만원</span>
-            <span class="text-md"> ~ </span>
+            <span class="text-md"> - </span>
             <span class="text-md">최대 </span>
             <span class="text-sm">00</span>
             <span class="text-md">만원</span>
