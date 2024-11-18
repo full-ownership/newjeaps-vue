@@ -1,5 +1,7 @@
 <script setup>
 import { KakaoMap } from 'vue3-kakao-maps';
+import CardView from './CardView.vue';
+import RangeSlider from './RangeSlider.vue';
 
 const coordinate = {
   lat: 37.566826,
@@ -62,29 +64,25 @@ const filters = ['가격', '면적', '사용승인일', '층수'];
           </svg>
         </button>
       </div>
-
       <!-- 리스트와 지도 영역 -->
       <div class="flex flex-row h-full font-PretendardRegular text-gray-800">
-        <div class="flex flex-col w-1/3 bg-blue-100 h-full rounded-lg">
+        <div class="flex flex-col bg-blue-200 h-full rounded-lg">
           <div class="flex flex-row bg-pink-100 p-2 text-xs">
             <p class="mr-1 ml-2 cursor-pointer">인기순</p>
             <p class="mr-1 cursor-pointer">가격순</p>
             <p class="mr-1 cursor-pointer">면적순</p>
+            <FilterButton></FilterButton>
           </div>
           <!-- 목록 영역 추가할 수 있습니다 -->
-          <div class="p-4">목록 데이터
-            <div class="bg-white">
-                아ㅣㄴ녕 
-            </div>
-
-
+          <div class="p-4">
+            <CardView description="hi"></CardView>
+            <CardView description="hi"></CardView>
           </div>
         </div>
-     
 
         <!-- 지도 표시 영역 -->
-        <div class="w-2/3">
-          <KakaoMap :lat="coordinate.lat" :lng="coordinate.lng" class="w- h-full" />
+        <div class="w-full bg-purple-100">
+          <KakaoMap :lat="coordinate.lat" :lng="coordinate.lng" width="100%"/>
         </div>
       </div>
     </div>

@@ -9,6 +9,9 @@ module.exports = {
         PretendardRegular: ["Pretendard Regular"],
         PretendardSemiBold: ["Pretendard SemiBold"],
 	    },
+      fontSize: {
+        'xxs': '0.65rem', // 10px
+      },
     },
   },
    variants: {

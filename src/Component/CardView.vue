@@ -1,0 +1,67 @@
+<template>
+  <div class="w-96 mx-auto p-1 mb-2">
+    <div class="bg-white border border-gray-200 rounded-md shadow-sm flex flex-row py-2">
+      <!-- 이미지 섹션 -->
+       <div class="bg-pink-100 w-28 h-28 mx-2">
+         이미지
+       </div>
+      <!-- 내용 섹션 -->
+      <div class="">
+        <span class="inline-flex items-center text-xs w-auto text-gray-600 border-2 border-gray-200 bg-white rounded-lg px-2 text-center">
+          아파트</span>
+        <h5 class="text-lg font-bold text-gray-800 pl-1">아파트 이름</h5>
+        <div class="pl-1">
+          <span class="text-sm text-gray-600">
+            동작구</span>
+          <span class="text-sm text-gray-600">
+            동자동</span>
+        </div>
+        <div class="text-xxs pl-1">
+          매매가
+        </div>
+          <div class="pl-1">
+            <span class="text-md">최소 </span>
+            <span class="text-sm">00</span>
+            <span class="text-md">만원</span>
+            <span class="text-md"> ~ </span>
+            <span class="text-md">최대 </span>
+            <span class="text-sm">00</span>
+            <span class="text-md">만원</span>
+          </div>
+        <!-- 버튼 -->
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  props: {
+    image: {
+      type: String,
+      required: true,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    buttonText: {
+      type: String,
+      default: "Click Me",
+    },
+  },
+  methods: {
+    onButtonClick() {
+      this.$emit("button-click");
+    },
+  },
+};
+</script>
+
+<style scoped>
+/* TailwindCSS 스타일을 사용하기 때문에 별도의 추가 스타일은 필요하지 않습니다. */
+</style>
