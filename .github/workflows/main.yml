@@ -61,15 +61,20 @@ jobs:
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker image prune -af
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker volume prune -f
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker system prune -af --volumes
-      
-            # 기존 컨테이너 종료 및 삭제
-            CONTAINER_ID=$(sudo docker ps -q --filter "publish=80-8080")
-            if [ ! -z "$CONTAINER_ID" ]; then
-              echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker stop $CONTAINER_ID
-              echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker rm $CONTAINER_ID
-            fi
-      
+
             # Docker 이미지 업데이트 및 컨테이너 실행
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker pull ${{ env.DOCKER_IMAGE_NAME }}:latest
+      
+           
+          
+            
+            
+            # 기존 컨테이너 중지
+            if [ "$(sudo docker ps -q -f name=vue-container)" ]; then
+              echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker stop vue-container
+            fi
+            
+            # 새로운 컨테이너 실행
             echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S docker run --name vue-container -d -p 60:3000 -e TZ=Asia/Seoul \
               -v $LOG_DIR/app.log:/app/logs/app.log ${{ env.DOCKER_IMAGE_NAME }}:latest
+
