@@ -8,6 +8,7 @@ module.exports = {
 	      Pretendard: ["Pretendard"],
         PretendardRegular: ["Pretendard Regular"],
         PretendardSemiBold: ["Pretendard SemiBold"],
+        PretendardBold: ["Pretendard Bold"],
 	    },
       fontSize: {
         'xxs': '0.65rem', // 10px

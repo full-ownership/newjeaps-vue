@@ -1,7 +1,7 @@
 <script setup>
 import { KakaoMap } from 'vue3-kakao-maps';
 import CardView from './CardView.vue';
-import RangeSlider from './RangeSlider.vue';
+//import RangeSlider from '@/Component/RangeSlider.vue';
 
 const coordinate = {
   lat: 37.566826,
