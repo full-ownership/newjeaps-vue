@@ -1,7 +1,7 @@
 <template>
 <div class="mouse_scroll" aria-label="스크롤 유도">
     <span class="mouse mx-auto">
-      <div id="mouse_wheel" class="w-[1px] h-[5px] border border-gray-800 rounded-lg mx-auto mt-1"></div>
+      <div id="mouse_wheel" class="w-[1px] h-[5px] border border-gray-600 rounded-lg mx-auto mt-1"></div>
     </span>
 
     <div class="dowm_arrow">
@@ -35,7 +35,7 @@
 .mouse {
   width: 20px;
   height: 30px;
-  border: 3px solid #333;
+  border: 3px solid #2a2a2a;
   border-radius: 20px;
   margin-bottom: 0px;
   position: relative;
@@ -53,6 +53,7 @@
 .mention{
   animation: bounce 1.5s infinite;
   margin-top: 10px;
+  color: #2a2a2a;;
 }
 
 // 화살표

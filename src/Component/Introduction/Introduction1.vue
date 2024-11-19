@@ -1,6 +1,6 @@
 <template>
   <div data-aos="fade-up"
-    data-aos-anchor-placement="bottom-center"  data-aos-duration="400" d class="bg-white-200 flex items-center justify-center mt-36">
+    data-aos-anchor-placement="bottom-center"  data-aos-duration="400" d class="bg-white-200 flex items-center justify-center">
       <img src="@/assets/img/logo_kor.png" alt="로컬 이미지" width="450" />
     </div>
 
@@ -12,5 +12,4 @@
         뉴집스가 함께 하겠습니다
       </div>
     </div>
-
 </template>

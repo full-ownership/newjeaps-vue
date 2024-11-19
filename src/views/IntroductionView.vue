@@ -33,21 +33,14 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div id="introduction_container" class="pt-24 h-[100vh] bg-pink-500 flex flex-col">
-    <div v-if="currentComponent === 1">
+  <div id="introduction_container" class="pt-24 h-[100vh]  bg-pink-100 flex flex-col justify-center ">
+
+    <div class="mt-[12.5%] ">
       <Introduction1 />
     </div>
-    <div v-if="currentComponent === 2">
-      <Introduction2 />
-    </div>
-    <div v-if="currentComponent === 3">
-      <!-- ThirdComponent는 주석 처리되었으므로 나중에 추가 가능 -->
-      <ThirdComponent />
-    </div>
 
-    <div class="mt-auto mb-12">
+    <div class="mt-auto mb-8">
       <Mouse></Mouse>
     </div>
-
   </div>
 </template>
