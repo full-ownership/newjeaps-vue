@@ -7,24 +7,17 @@ import './assets/tailwind.css';
 
 // AOS 추가
 import AOS from 'aos';
-import 'aos/dist/aos.css';
-
 // Kakao API 초기화
 import { useKakao } from 'vue3-kakao-maps/@utils';
-
-// Kakao API 초기화
 useKakao("6968378f2f6b7f841d023ce674b9b307");
-
-
 
 // main.js
 import $ from 'jquery'; // jQuery 가져오기
-import 'fullpage.js/dist/fullpage.css'; // fullpage.css 가져오기
+import 'aos/dist/aos.css';
 
 // jQuery를 전역에 추가 (필요할 경우)
 window.$ = $;
 window.jQuery = $;
-
 
 // 애플리케이션 생성
 const app = createApp(App);
@@ -44,8 +37,11 @@ app.mixin({
   },
 });
 
+
+
 // Vue-Typer 플러그인 사용
 
 
 // 애플리케이션 마운트
 app.mount('#app');
+

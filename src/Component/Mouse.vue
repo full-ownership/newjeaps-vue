@@ -1,5 +1,5 @@
 <template>
-<div class="mouse_scroll bg-yellow-600" aria-label="스크롤 유도">
+<div class="mouse_scroll" aria-label="스크롤 유도">
     <span class="mouse mx-auto">
       <div id="mouse_wheel" class="w-[1px] h-[5px] border border-gray-600 rounded-lg mx-auto mt-1"></div>
     </span>
@@ -7,7 +7,7 @@
         <span class="arrow-next1"></span>
         <span class="arrow-next1"></span>
     </div>
-    <div class="mention">
+    <div class="mention text-pretendard">
       scroll down
     </div>
     <!-- 45deg : > 225deg : < 135deg 아래 315deg 위 -->

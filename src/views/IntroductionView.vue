@@ -3,7 +3,7 @@
     <!-- 첫 번째 섹션 -->
     <div class="section flex flex-col h-[100vh]" id="section1">
       <Introduction1></Introduction1>
-      <Mouse></Mouse>
+      <Mouse class="mt-[100px]"></Mouse>
     </div>
     <!-- 두 번째 섹션 -->
     <div class="section" id="section2">
@@ -52,7 +52,7 @@ import { onMounted } from 'vue';
 import Mouse from '@/Component/Mouse.vue';
 import Introduction1 from '@/Component/Introduction/Introduction1.vue';
 import Introduction2 from '@/Component/Introduction/Introduction2.vue';
-import $ from 'jquery';
+
 
 let isScrolling = false; // 스크롤 중인지 여부
 
