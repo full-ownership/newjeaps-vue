@@ -16,7 +16,7 @@ const goToNotice = () => {
 </script>
 
 <template>
-  <div class="flex bg-gray-100 h-full min-w-screen-md pt-32 pb-32 mt-20">
+  <div class="flex bg-gray-100 h-[100vh] min-w-screen-md pb-32">
     <!-- 헤더 높이만큼 상단 패딩 추가 -->
     <div class="w-2/3 m-auto flex flex-col items-center">
       <!-- 서치바 영역 -->

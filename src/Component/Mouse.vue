@@ -1,9 +1,8 @@
 <template>
-<div class="mouse_scroll" aria-label="스크롤 유도">
+<div class="mouse_scroll bg-yellow-600" aria-label="스크롤 유도">
     <span class="mouse mx-auto">
       <div id="mouse_wheel" class="w-[1px] h-[5px] border border-gray-600 rounded-lg mx-auto mt-1"></div>
     </span>
-
     <div class="dowm_arrow">
         <span class="arrow-next1"></span>
         <span class="arrow-next1"></span>
@@ -13,12 +12,10 @@
     </div>
     <!-- 45deg : > 225deg : < 135deg 아래 315deg 위 -->
 </div>
-
 </template>
 
 <style scoped lang="scss">
 /* scoped 스타일 적용 */
-
 
 .mouse_scroll {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
