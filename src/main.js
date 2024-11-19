@@ -1,17 +1,36 @@
+import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+import App from './App.vue';
+import router from './router';
+import './assets/tailwind.css';
 
-import App from './App.vue'
-import router from './router'
-import './assets/tailwind.css'
+// AOS 추가
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+
 import { useKakao } from 'vue3-kakao-maps/@utils';
 
-useKakao("6968378f2f6b7f841d023ce674b9b307")
-const app = createApp(App)
+// Kakao API 초기화
+useKakao("6968378f2f6b7f841d023ce674b9b307");
 
+// 애플리케이션 생성
+const app = createApp(App);
 
-app.use(createPinia())
-app.use(router)
+// Pinia, 라우터 사용
+app.use(createPinia());
+app.use(router);
 
-app.mount('#app')
+// AOS 초기화(스크롤 이벤트)
+app.mixin({
+  mounted() {
+    AOS.init({
+      duration: 800, // 애니메이션 지속 시간
+      easing: 'ease-in-out', // 애니메이션 속도
+      once: true, // 스크롤 시 한 번만 실행
+    });
+  },
+});
+
+// 애플리케이션 마운트
+app.mount('#app');
