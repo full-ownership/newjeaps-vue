@@ -3,7 +3,7 @@
     <!-- 첫 번째 섹션 -->
     <div class="section flex flex-col h-[100vh]" id="section1">
       <Introduction1></Introduction1>
-      <Mouse></Mouse>
+      <Mouse class="mt-[100px]"></Mouse>
     </div>
     <!-- 두 번째 섹션 -->
     <div class="section" id="section2">
