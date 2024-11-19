@@ -1,9 +1,8 @@
 <template>
-<div class="mouse_scroll" aria-label="스크롤 유도">
+<div class="mouse_scroll bg-yellow-600" aria-label="스크롤 유도">
     <span class="mouse mx-auto">
-      <div id="mouse_wheel" class="w-[1px] h-[5px] border border-gray-800 rounded-lg mx-auto mt-1"></div>
+      <div id="mouse_wheel" class="w-[1px] h-[5px] border border-gray-600 rounded-lg mx-auto mt-1"></div>
     </span>
-
     <div class="dowm_arrow">
         <span class="arrow-next1"></span>
         <span class="arrow-next1"></span>
@@ -13,12 +12,10 @@
     </div>
     <!-- 45deg : > 225deg : < 135deg 아래 315deg 위 -->
 </div>
-
 </template>
 
 <style scoped lang="scss">
 /* scoped 스타일 적용 */
-
 
 .mouse_scroll {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -35,7 +32,7 @@
 .mouse {
   width: 20px;
   height: 30px;
-  border: 3px solid #333;
+  border: 3px solid #2a2a2a;
   border-radius: 20px;
   margin-bottom: 0px;
   position: relative;
@@ -53,6 +50,7 @@
 .mention{
   animation: bounce 1.5s infinite;
   margin-top: 10px;
+  color: #2a2a2a;;
 }
 
 // 화살표
