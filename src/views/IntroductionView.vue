@@ -52,7 +52,7 @@ import { onMounted } from 'vue';
 import Mouse from '@/Component/Mouse.vue';
 import Introduction1 from '@/Component/Introduction/Introduction1.vue';
 import Introduction2 from '@/Component/Introduction/Introduction2.vue';
-import $ from 'jquery';
+
 
 let isScrolling = false; // 스크롤 중인지 여부
 

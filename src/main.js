@@ -6,20 +6,20 @@ import router from './router';
 import './assets/tailwind.css';
 
 // AOS 추가
-import AOS from 'aos';
-import 'aos/dist/aos.css';
+
+
 
 // Kakao API 초기화
 import { useKakao } from 'vue3-kakao-maps/@utils';
 
-// Kakao API 초기화
+
 useKakao("6968378f2f6b7f841d023ce674b9b307");
 
 
 
 // main.js
 import $ from 'jquery'; // jQuery 가져오기
-import 'fullpage.js/dist/fullpage.css'; // fullpage.css 가져오기
+
 
 // jQuery를 전역에 추가 (필요할 경우)
 window.$ = $;
@@ -35,13 +35,7 @@ app.use(router);
 
 // AOS 초기화(스크롤 이벤트)
 app.mixin({
-  mounted() {
-    AOS.init({
-      duration: 800, // 애니메이션 지속 시간
-      easing: 'ease-in-out', // 애니메이션 속도
-      once: true, // 스크롤 시 한 번만 실행
-    });
-  },
+ 
 });
 
 // Vue-Typer 플러그인 사용
