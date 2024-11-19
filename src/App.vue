@@ -4,16 +4,19 @@ import FooterView from '@/views/FooterView.vue'
 import MainView from '@/views/MainView.vue'
 import { RouterView } from 'vue-router'
 import RecommendationView from '@/views/RecommendationView.vue'
+import ChatbotButton from './Component/Chatbot/ChatbotButton.vue'
 
 </script>
 
 <template>
   <div>
-       <!-- <HeaderView /> -->
+    <!-- <HeaderView /> -->
     <HeaderView />
     <MainView />
     <!-- <RecommendationView /> -->
+    <ChatbotButton />
     <FooterView />
+
   </div>
 </template>
 <style scoped>
