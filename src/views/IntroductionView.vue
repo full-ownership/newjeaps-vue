@@ -1,38 +1,52 @@
+<script setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import Introduction1 from '@/Component/Introduction/Introduction1.vue';
+import Introduction2 from '@/Component/Introduction/Introduction2.vue';
+import Mouse from '@/Component/Mouse.vue';
+
+const currentComponent = ref(1); // 현재 표시할 컴포넌트
+
+// 스크롤 이벤트 핸들러 함수
+const handleScroll = () => {
+  const scrollPos = window.scrollY;  // 현재 스크롤 위치 확인
+  console.log("현재 스크롤 위치: ", scrollPos);  // 스크롤 위치 로그 확인
+
+
+  if (scrollPos > 500) {
+    currentComponent.value = 2; // 두 번째 컴포넌트
+  } else {
+    currentComponent.value = 1; // 첫 번째 컴포넌트
+  }
+};
+
+onMounted(() => {
+  // 스크롤 이벤트 리스너 등록
+  window.addEventListener('scroll', handleScroll);
+  console.log("스크롤 이벤트 리스너 등록됨");
+});
+
+onBeforeUnmount(() => {
+  // 스크롤 이벤트 리스너 해제
+  window.removeEventListener('scroll', handleScroll);
+  console.log("스크롤 이벤트 리스너 해제됨");
+});
+</script>
+
 <template>
-  <div id="app2" class="pt-20">
-    <div data-aos="fade-up"
-    data-aos-anchor-placement="bottom-center"  data-aos-duration="400" d class="bg-white-200 flex items-center justify-center mt-48">
-      <img src="@/assets/img/logo_kor.png" alt="로컬 이미지" width="450" />
+  <div id="introduction_container" class="pt-24 h-[100vh] bg-pink-500 flex flex-col">
+    <div v-if="currentComponent === 1">
+      <Introduction1 />
+    </div>
+    <div v-if="currentComponent === 2">
+      <Introduction2 />
+    </div>
+    <div v-if="currentComponent === 3">
+      <!-- ThirdComponent는 주석 처리되었으므로 나중에 추가 가능 -->
+      <ThirdComponent />
     </div>
 
-
-    <div data-aos="zoom-in" data-aos-duration="1000" class="pt-10">
-
-      <div class="bg-blue-200 w-[200] text-center text-5xl font-PretendardSemiBold text-gray-800">
-        당신의 성공적인 부동산 투자
-      </div>
-
-      <div class="bg-blue-200 w-[200] text-center text-5xl font-PretendardSemiBold text-gray-800 mt-2">
-        뉴집스가 함께 하겠습니다
-      </div>
-
-      <!-- 여기 부분은 기능 소개 -->
-       <div class="bg-pink-200 h-[200] w-full">
-        <div class= " bt-yellow-400">
-
-
-        <img src="@/assets/img/intro/main1.jpg" alt="로컬 이미지" width="450" />
-          1. 매물별 정보 제공
-        </div>
-       </div>
-
-
-      <div>
-        <div class="text-center font-PretendardSemiBold">
-          회사 연혁
-        </div>
-
-      </div>
+    <div class="mt-auto mb-12">
+      <Mouse></Mouse>
     </div>
 
   </div>
