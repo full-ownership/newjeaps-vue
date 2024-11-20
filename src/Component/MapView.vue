@@ -74,13 +74,13 @@ const filters = ['가격', '면적', '사용승인일', '층수'];
           <!-- 목록 영역 추가할 수 있습니다 -->
           <div class="p-4">목록 데이터
             <div class="bg-white">
-                아ㅣㄴ녕 
+                아ㅣㄴ녕
             </div>
 
 
           </div>
         </div>
-     
+
 
         <!-- 지도 표시 영역 -->
         <div class="w-full">
