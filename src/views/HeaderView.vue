@@ -6,11 +6,11 @@
       </div>
       <nav class="md:ml-auto flex flex-wrap items-center text-base justify-center">
         <a @click="goToMapView" href="" class="mr-5 hover:text-gray-900">지도</a>
-        <a href="/introductions" class="mr-5 hover:text-gray-900">회사소개</a>
+        <a @click="goToIntroductionView" class="mr-5 hover:text-gray-900">회사소개</a>
         <button
           type="button"
           class="mb-0 text-grey bg-white-400 hover:bg-blue-400 hover:text-white border focus:outline-none focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center dark:hover:bg-blue-700 dark:focus:white"
-          @click="goToLogin" 
+          @click="goToLogin"
         >
           로그인 | 회원가입
         </button>
@@ -25,16 +25,20 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 const goToHome = () => {
-  router.push({ name: 'home' }); 
+  router.push({ name: 'home' });
 };
 
 const goToLogin = () => {
   console.log('Login button clicked');
-  router.push({ name: 'login' }); 
+  router.push({ name: 'login' });
 };
 
 const goToMapView = () => {
   router.push({name: 'map'});
+}
+
+const goToIntroductionView = () =>{
+  router.push({name: 'introduction'})
 }
 
 </script>
