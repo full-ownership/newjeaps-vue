@@ -1,4 +1,4 @@
-\name: Deploy Vue App to Ubuntu Server using Docker
+name: Deploy Vue App to Ubuntu Server using Docker
 
 on:
   push:
