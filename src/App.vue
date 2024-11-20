@@ -2,9 +2,6 @@
 import HeaderView from '@/views/HeaderView.vue'
 import FooterView from '@/views/FooterView.vue'
 import MainView from '@/views/MainView.vue'
-import { RouterView } from 'vue-router'
-import RecommendationView from '@/views/RecommendationView.vue'
-import ChatbotButton from './Component/Chatbot/ChatbotButton.vue'
 
 
 </script>
@@ -14,8 +11,6 @@ import ChatbotButton from './Component/Chatbot/ChatbotButton.vue'
     <!-- <HeaderView /> -->
     <HeaderView />
     <MainView />
-    <!-- <RecommendationView /> -->
-    <ChatbotButton />
     <FooterView />
   </div>
 </template>
