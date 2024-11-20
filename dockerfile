@@ -5,7 +5,7 @@ WORKDIR /app
 
 # 의존성 설치
 COPY package*.json ./
-RUN npm install
+RUN npm cache clean --force && npm install --no-optional
 
 # Vue 애플리케이션 빌드
 COPY . .
