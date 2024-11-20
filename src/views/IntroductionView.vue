@@ -6,8 +6,9 @@
       <Mouse class="mt-[100px]"></Mouse>
     </div>
     <!-- 두 번째 섹션 -->
-    <div class="section bg-yellow-400 h-[1800px]" id="section2">
+    <div class="section flex flex-col h-[100vh]" id="section2">
       <Introduction2></Introduction2>
+      <Mouse class="mt-[100px]"></Mouse>
     </div>
 
     <!-- 세 번째 섹션 -->
@@ -61,7 +62,6 @@ onMounted(() => {
   // 스크롤 애니메이션 함수
   function scrollToSection(sectionId) {
     if (isScrolling) return; // 이미 스크롤 중이면 함수 종료
-
     isScrolling = true; // 스크롤 시작
 
     // id로 지정된 섹션으로 부드럽게 스크롤
@@ -80,7 +80,7 @@ onMounted(() => {
     const scrollPosition = window.scrollY;
     console.log(scrollPosition)
     // 예를 들어, 1000px 이상 스크롤하면 section2로 이동
-    if (scrollPosition > 150 && scrollPosition < 400) {
+    if (scrollPosition > 110 && scrollPosition < 400) {
          // id가 'targetSection'인 곳으로 스크롤
          scrollToSection('#section2'); // section2로 스크롤=
     } else if (scrollPosition > 2000 && scrollPosition < 3000) {
