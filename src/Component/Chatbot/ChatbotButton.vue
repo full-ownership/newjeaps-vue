@@ -1,15 +1,22 @@
 <template>
   <div>
+    <!-- Chat Toggle Button -->
     <button
-      @click="toggleChat"
-      class="fixed bottom-6 right-6 w-16 h-16 rounded-full bg-[#4A90E2] text-white text-2xl flex items-center justify-center shadow-lg hover:bg-[#357ABD] transition"
-    >
-      💬
-    </button>
+  @click="toggleChat"
+  class="fixed bottom-6 right-6 w-16 h-16 rounded-full bg-white text-[#4A90E2] flex items-center justify-center shadow-[6px_6px_10px_rgba(0,0,0,0.2),-6px_-6px_10px_rgba(255,255,255,0.8)] hover:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,1)] transition-transform transform hover:scale-95"
+>
+  <img src="@/assets/icons/chatbot.png" alt="챗봇 아이콘" class="w-10 h-10" />
+</button>
 
+
+
+
+
+
+    <!-- Chat Window -->
     <div
       v-if="isChatOpen"
-      class="fixed bottom-24 right-6 w-96 bg-white border border-gray-200 rounded-lg shadow-lg flex flex-col"
+      class="fixed bottom-24 right-6 w-96 h-[500px] bg-white border border-gray-200 rounded-lg shadow-lg flex flex-col"
     >
       <!-- Header -->
       <div class="bg-[#4A90E2] text-white p-4 rounded-t-lg flex justify-between items-center">
@@ -22,8 +29,12 @@
         </button>
       </div>
 
-      <!-- Messages -->
-      <div class="flex-1 p-4 space-y-2 overflow-y-auto">
+      <!-- Messages Section -->
+      <div
+        ref="messagesContainer"
+        class="flex-1 p-4 space-y-2 overflow-y-auto"
+      >
+        <!-- Messages -->
         <div
           v-for="(msg, index) in messages"
           :key="index"
@@ -37,27 +48,20 @@
             {{ msg.text }}
           </span>
         </div>
+
+        <!-- Loading Indicator -->
+        <div v-if="isLoading" class="flex justify-center items-center mt-4 mb-4">
+          <div class="loader"></div>
+        </div>
       </div>
 
-      <!-- Quick Action Buttons -->
-      <div class="p-4 border-t border-gray-200 flex space-x-2 overflow-x-auto">
-        <button
-          v-for="(question, index) in quickQuestions"
-          :key="index"
-          @click="sendQuickMessage(question.text)"
-          class="bg-[#4A90E2] text-white px-3 py-2 rounded-lg hover:bg-[#357ABD] transition whitespace-nowrap"
-        >
-          {{ question.label }}
-        </button>
-      </div>
-
-      <!-- Input Area -->
+      <!-- Input Section -->
       <div class="p-4 border-t border-gray-200 flex items-center space-x-2">
         <input
           v-model="userMessage"
           type="text"
           placeholder="메시지를 입력하세요..."
-          class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-[#4A90E2]"
+          class="flex-1 px-4 py-5 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-[#4A90E2]"
           @keypress.enter="sendMessage"
         />
         <button
@@ -72,53 +76,104 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, nextTick } from "vue";
+import axios from "axios";
 
 // Chat state
 const isChatOpen = ref(false);
 const userMessage = ref("");
 const messages = ref([]);
+const isLoading = ref(false);
+const messagesContainer = ref(null);
 
-// Predefined quick action questions
-const quickQuestions = ref([
-  { label: "매매 시세", text: "현재 매매 시세가 궁금해요." },
-  { label: "전세 시세", text: "전세 시세를 알고 싶어요." },
-  { label: "대출 상담", text: "대출 상담을 받고 싶어요." },
-]);
-
-// Functions
+// Toggle Chat
 const toggleChat = () => {
   isChatOpen.value = !isChatOpen.value;
 };
 
-const sendMessage = () => {
-  if (userMessage.value.trim()) {
-    // Add user message
-    messages.value.push({ text: userMessage.value, sender: "user" });
-    const currentMessage = userMessage.value; // Keep a copy of the message
-    userMessage.value = "";
+// Scroll to Bottom
+const scrollToBottom = () => {
+  nextTick(() => {
+    if (messagesContainer.value) {
+      messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+    }
+  });
+};
 
-    // Simulate chatbot response
-    setTimeout(() => {
+// Send Message
+const sendMessage = async () => {
+  if (userMessage.value.trim()) {
+    // 사용자 메시지 추가
+    messages.value.push({ text: userMessage.value, sender: "user" });
+    const currentMessage = userMessage.value;
+    userMessage.value = ""; // 입력 필드 초기화
+    scrollToBottom(); // 스크롤 아래로 이동
+
+    isLoading.value = true; // 로딩 시작
+
+    try {
+      // GPT API 요청
+      const response = await axios.post(
+        "https://75ec-121-147-32-107.ngrok-free.app/ask/",
+        { query: currentMessage },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "69420",
+          },
+        }
+      );
+
+      // 서버 응답 추가
+      const { response: botResponse } = response.data;
       messages.value.push({
-        text: getBotResponse(currentMessage),
+        text: botResponse || "답변을 받을 수 없었습니다. 다시 시도해주세요.",
         sender: "bot",
       });
-    }, 1000);
+      scrollToBottom(); // 스크롤 아래로 이동
+    } catch (error) {
+      console.error("Error fetching chatbot response:", error);
+      messages.value.push({
+        text: "죄송합니다, 서버 요청 중 문제가 발생했습니다. 다시 시도해주세요.",
+        sender: "bot",
+      });
+      scrollToBottom(); // 스크롤 아래로 이동
+    } finally {
+      isLoading.value = false; // 로딩 종료
+    }
   }
 };
 
-const sendQuickMessage = (text) => {
-  // Automatically send predefined quick question
-  userMessage.value = text;
-  sendMessage();
-};
-
-const getBotResponse = (text) => {
-  // Basic bot responses for demonstration
-  if (text.includes("매매 시세")) return "현재 매매 시세는 지역마다 다릅니다. 구체적인 지역을 알려주세요!";
-  if (text.includes("전세 시세")) return "전세 시세는 부동산 플랫폼에서 확인하거나 상담을 받아보세요.";
-  if (text.includes("대출 상담")) return "대출 상담을 위해 고객센터에 문의해주세요.";
-  return "질문을 이해하지 못했어요. 다시 말씀해 주세요.";
-};
+// Send Quick Action Message
+// const sendQuickMessage = (text) => {
+//   userMessage.value = text;
+//   sendMessage();
+// };
 </script>
+
+<style scoped>
+/* 고정 높이 설정 */
+.flex-1 {
+  height: calc(100% - 100px); /* 전체 높이에서 헤더와 입력 필드 제외 */
+  overflow-y: auto; /* 스크롤 활성화 */
+}
+
+/* 로딩 애니메이션 */
+.loader {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>

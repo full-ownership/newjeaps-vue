@@ -5,6 +5,7 @@ import MainView from '@/views/MainView.vue'
 import ChatbotButton from './Component/Chatbot/ChatbotButton.vue'
 
 
+
 </script>
 
 <template>
@@ -12,8 +13,6 @@ import ChatbotButton from './Component/Chatbot/ChatbotButton.vue'
     <!-- <HeaderView /> -->
     <HeaderView />
     <MainView />
-    <!-- <RecommendationView /> -->
-    <ChatbotButton />
     <FooterView />
   </div>
 </template>
