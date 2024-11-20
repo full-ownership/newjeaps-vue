@@ -28,6 +28,7 @@ const goToHome = () => {
   router.push({ name: 'home' });
 };
 
+
 const goToLogin = () => {
   console.log('Login button clicked');
   router.push({ name: 'login' });

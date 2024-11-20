@@ -1,17 +1,3 @@
-<script setup>
-import { KakaoMap } from 'vue3-kakao-maps';
-import CardView from './CardView.vue';
-//import RangeSlider from '@/Component/RangeSlider.vue';
-
-const coordinate = {
-  lat: 37.566826,
-  lng: 126.9786567,
-};
-
-// 필터 버튼 목록
-const filters = ['가격', '면적', '사용승인일', '층수'];
-</script>
-
 <template>
   <div class="flex flex-row items-center w-full h-[100vh] pt-20">
     <!-- 버튼 영역 -->
@@ -75,14 +61,18 @@ const filters = ['가격', '면적', '사용승인일', '층수'];
           </div>
           <!-- 목록 영역 추가할 수 있습니다 -->
           <div class="p-2">
-            <CardView description="hi" @click="showFrame = !showFrame"></CardView>
-            <CardView description="hi"></CardView>
 
-            <!-- slide 효과 열리는 프레임 -->
-            <div v-show="showFrame" class="absolute top-40 bottom-0  left-[460px] w-72 bg-blue-500 h-72 p-1 shadow-lg rounded-md z-10
-            transition-all duration-2000 ease-in-out" :style="{'left': showFrame ? 'translateX(500px)' : 'translateX(0)'}">
-            <div class="bg-white w-full h-full"> 프레임입니다만 </div>
-          </div>
+            <div v-if="houseInfosLoaded">
+              <div v-for="(house, index) in houseInfos.data" :key="index">
+                <p>{{ house.name }}</p>
+                <p>{{ house.price }}</p>
+              </div>
+            </div>
+
+            <!-- 데이터가 로딩 중일 때 표시할 로딩 화면 -->
+            <div v-else>
+              <p>로딩 중...</p>
+            </div>
 
           </div>
         </div>
@@ -90,19 +80,39 @@ const filters = ['가격', '면적', '사용승인일', '층수'];
         <!-- 지도 표시 영역 -->
         <div class="relative w-full bg-purple-100">
           <KakaoMap :lat="coordinate.lat" :lng="coordinate.lng" width="100%" height="100%"/>
-        <!-- 이동해야하는 자리 -->
         </div>
       </div>
 
     </div>
   </div>
 </template>
-<script>
-export default {
-  data() {
-    return {
-      showFrame: false, // Frame의 표시 여부를 관리하는 상태 변수
-    };
-  },
+
+<script setup>
+import { KakaoMap } from 'vue3-kakao-maps';
+import { ref, onMounted } from 'vue';
+import { useHouseInfoStore } from '@/stores/mapCard'; // Pinia store 가져오기
+
+const coordinate = {
+  lat: 37.566826,
+  lng: 126.9786567,
 };
+
+// 필터 버튼 목록
+const filters = ['가격', '면적', '사용승인일', '층수'];
+
+// Pinia store 사용
+const houseInfoStore = useHouseInfoStore();
+
+// 데이터를 가져오는 함수
+const fetchData = async (type) => {
+  await houseInfoStore.fetchHouseInfo(type); // API 호출하여 데이터 가져오기
+  //console.log(houseInfoStore.houseInfos.data); // store의 houseInfos 상태 출력
+};
+
+onMounted(async () => {
+  await fetchData('아파트'); // 데이터가 로딩된 후 실행
+});
+
+// store에서 houseInfos 가져오기
+const houseInfos = houseInfoStore.houseInfos;
 </script>
