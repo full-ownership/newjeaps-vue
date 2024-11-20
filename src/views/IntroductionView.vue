@@ -6,9 +6,8 @@
       <Mouse class="mt-[100px]"></Mouse>
     </div>
     <!-- 두 번째 섹션 -->
-    <div class="section" id="section2">
+    <div class="section bg-yellow-400 h-[1800px]" id="section2">
       <Introduction2></Introduction2>
-
     </div>
 
     <!-- 세 번째 섹션 -->
@@ -109,7 +108,7 @@ onMounted(() => {
 }
 
 #section1 { background-color: #ffffff; }
-#section2 { background-color: #250066; }
+#section2 { background-color: #fdfdfd; }
 #section3 { background-color: #43004e; }
 #section4 { background-color: #630021; }
 #section5 { background-color: #5f0600; }
