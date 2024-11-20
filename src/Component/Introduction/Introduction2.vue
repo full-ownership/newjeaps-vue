@@ -15,6 +15,9 @@
         <div class="w-[200] text-center text-gray-800 text-6xl font-PretendardSemiBold ">
         2023.07.14
         </div>
+        <div class="bg-gray-600 w-[100]">
+
+        </div>
         <div class="w-[200] text-center text-gray-800 text-6xl font-PretendardSemiBold mt-4">
         00상사 설립
         </div>
