@@ -5,6 +5,7 @@ import onlyhouse from "@/assets/icons/onlyhouse.png";
 import officetel from "@/assets/icons/officetel.png";
 import heart from "@/assets/icons/heart.png";
 import notice from "@/assets/icons/notice.png";
+import ChatbotButton from '@/Component/Chatbot/ChatbotButton.vue'
 
 import { useRouter } from "vue-router";
 
@@ -117,6 +118,7 @@ const goToNotice = () => {
       </div>
     </div>
   </div>
+  <ChatbotButton />
 </template>
 
 <style scoped>
