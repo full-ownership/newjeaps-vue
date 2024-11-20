@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col">
+  <div class="flex flex-col h-[80%]">
 
     <div class="bg-pink-800 w-[100vw] flex flex-row mt-12">
       <!-- 왼쪽 섹션 -->
