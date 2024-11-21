@@ -1,10 +1,11 @@
 <script setup>
 import { KakaoMap } from 'vue3-kakao-maps';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed , watch } from 'vue';
 import axios from 'axios';
 import { useHouseInfoStore } from '@/stores/mapCard';
 import CardView from './CardView.vue';
 import Button from '@/Component/Button/Button.vue';
+import 'vue-range-slider/dist/vue-range-slider.css'
 
 const map = ref(null); // Kakao Map 객체
 const polygons = ref([]); // 생성된 폴리곤 객체 배열
@@ -135,8 +136,24 @@ const rangeSlider = document.getElementById("rangeSlider");
   });
 });
 
+import RangeSlider from 'vue-simple-range-slider';
+import 'vue-simple-range-slider/css';
+import { reactive } from 'vue';
+// 슬라이더 값을 반응형으로 관리
+const state = reactive({
+  value: [10, 100],  // 범위 슬라이더의 두 값
+  valuee : 40,
+});
+
+
+// state.value가 변경될 때마다 콘솔에 값 출력
+watch(() => state.value, (newValue) => {
+  console.log('선택한 값:', newValue);
+}, { deep: true });
+
 
 </script>
+
 
 <template>
   <div class="flex flex-row items-center w-full h-[100vh] pt-20">
@@ -177,38 +194,84 @@ const rangeSlider = document.getElementById("rangeSlider");
     <!-- 지도 및 필터 영역 -->
     <div class="flex flex-col justify-start w-full h-full">
 
-      <!-- 필터 버튼 -->
-      <div class="flex flex-row items-center m-0 bg-white h-14 border-b border-gray-200">
+      <!-- 필터 전체 버튼 -->
+      <div class="flex flex-row items-center py-4 h-14 border-b border-gray-200">
+    
+        <!--검색 창-->
+        <div class="relative w-[370px] ml-4 mr-2">
+          <input
+            type="text"
+            placeholder="찾고자하는 아파트 이름을 입력하세요"
+            class="w-full h-8 px-4 pr-10 text-sm text-gray-700 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          />
+        <button
+          type="button"
+          class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-gray-700">
+            <svg
+              class="w-4 h-4"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 20 20">
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 19l-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+              </svg>
+        </button>
+    </div>
+
         <div v-for="(filter, index) in filters" :key="index" class="relative inline-block text-left ml-2">
-          <button type="button" id="filterButton" class="inline-flex justify-between w-full h-8 border border-gray-300 shadow-sm px-4 py-2 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-            {{ filter }}
-            <svg class="-mr-1 ml-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-            </svg>
-          </button>
+            <!-- 버튼 -->
+            <button id="filterButton" type="button" 
+                    class=" flex flex-row items-center w-full h-8 border border-gray-300 shadow-sm pl-2 text-xs font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+              <div> {{ filter }} </div>
+              <svg class="h-4 w-6 text-gray-800" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+            <!-- 아이콘 -->
+             <div class="bg-white absolute z-10 w-[200px] h-[120px] top-10 left-0 hidden border-2 border-gray-200" id="rangeSlider">
+                <RangeSlider
+                v-model="state.value"  
+                style="width: 90%"  
+                exponential  
+                :max="10000"  
+                class="m-auto mt-[25px]"
+              >
+                <!-- 슬라이더 끝에 '$' 기호 표시 -->
+                <template #suffix>만원</template>
+              </RangeSlider>
+                    
+
+             </div>
+          
+              
+     
+
+            
+     
+
+          
+          
         </div>
 
-        <!-- Range Slider (초기에는 숨겨짐) -->
-        <div v-for="(filter, index) in filters" :key="index" class="relative inline-block text-left ml-2">
-          <div id="rangeSlider" class="hidden mt-4">
-            <input type="range" min="0" max="100" value="50" class="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer" id="myRange">
-            <span id="sliderValue" class="text-xs font-medium text-gray-700 mt-2">50</span>
-          </div>
-        </div>
+       
 
 
-
-        <!-- 리셋 버튼 -->
         <button type="button" class="relative inline-block text-left ml-2 h-8 px-2 py-2 bg-white border border-gray-300 shadow-sm focus:ring-indigo-500">
           <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
           </svg>
         </button>
+
       </div>
       <!-- 리스트와 지도 영역 -->
-      <div class="flex flex-row h-full font-PretendardRegular text-gray-800">
+      <div class="flex flex-row h-full font-Pretendard text-gray-600">
         <div class="flex flex-col h-full rounded-lg">
-          <div class="flex flex-row p-2 text-xs border-b-2">
+          <div class="flex flex-row p-2 text-s bg-blue-100">
             <p class="mr-1 ml-2 cursor-pointer font-bold">인기순</p>
             <p class="mr-1 cursor-pointer font-bold">가격순</p>
             <p class="mr-1 cursor-pointer font-bold">면적순</p>
