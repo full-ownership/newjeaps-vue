@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <script setup>
 import { KakaoMap } from 'vue3-kakao-maps';
 import { ref, onMounted } from 'vue';
@@ -25,13 +24,13 @@ const onLoadKakaoMap = async (mapRef) => {
     console.log('Zoom level changed:', level.value);
 
     if (!detailMode.value && level.value <= 10) {
-      detailMode.value = true; // 상세 모드 활성화
-      removePolygon(); // 기존 폴리곤 제거
-      await init('/sig.json'); // 상세 데이터를 로드
+      detailMode.value = true;
+      removePolygon();
+      await init('/sig.json');
     } else if (detailMode.value && level.value > 10) {
-      detailMode.value = false; // 광역 모드 활성화
-      removePolygon(); // 기존 폴리곤 제거
-      await init('/sido.json'); // 광역 데이터를 로드
+      detailMode.value = false;
+      removePolygon();
+      await init('/sido.json');
     }
   });
 };
@@ -122,8 +121,6 @@ const houseInfos = houseInfoStore.houseInfos;
 
 
 
-=======
->>>>>>> 6c2071d4ff1e5b7aacee95ac27651e9273893abb
 <template>
   <div class="flex flex-row items-center w-full h-[100vh] pt-20">
     <!-- 버튼 영역 -->
@@ -186,7 +183,6 @@ const houseInfos = houseInfoStore.houseInfos;
             <FilterButton></FilterButton>
           </div>
           <!-- 목록 영역 추가할 수 있습니다 -->
-<<<<<<< HEAD
           <div class="p-2">
 
             <div v-if="houseInfosLoaded">
@@ -200,83 +196,22 @@ const houseInfos = houseInfoStore.houseInfos;
             <div v-else>
               <p>로딩 중...</p>
             </div>
-=======
-          <div class="p-2 overflow-y-auto">
-
-            <!--<div v-if="houseInfosLoaded">-->
-              <div v-for="(house, index) in houseInfos.data" :key="index">
-
-                <CardView
-                  :id="house.id"
-                  :buildingUse="house.buildingUse"
-                  :buildingName="house.buildingName"
-                  :districtName="house.districtName"
-                  :legalName="house.legalName"
-                  :minPropertyPrice="house.minPropertyPrice"
-                  :maxPropertyPrice="house.maxPropertyPrice"
-                />
-        
-              </div>
-            <!--</div>-->
-
-            <!-- 데이터가 로딩 중일 때 표시할 로딩 화면 -->
-        
->>>>>>> 6c2071d4ff1e5b7aacee95ac27651e9273893abb
 
           </div>
         </div>
 
         <!-- 지도 표시 영역 -->
         <div class="relative w-full bg-purple-100">
-<<<<<<< HEAD
           <KakaoMap
-    :lat="36.866826"
-    :lng="127.7786567"
-    :level="12"
-    @onLoadKakaoMap="onLoadKakaoMap"
-    style="width: 100%; height: 100vh;"
-  />
-=======
-          <KakaoMap :lat="coordinate.lat" :lng="coordinate.lng" width="100%" height="100%"/>
->>>>>>> 6c2071d4ff1e5b7aacee95ac27651e9273893abb
+            :lat="36.866826"
+            :lng="127.7786567"
+            :level="12"
+            @onLoadKakaoMap="onLoadKakaoMap"
+            style="width: 100%; height: 100vh;"
+          />
         </div>
       </div>
 
     </div>
   </div>
 </template>
-<<<<<<< HEAD
-=======
-
-<script setup>
-import { KakaoMap } from 'vue3-kakao-maps';
-import { ref, onMounted } from 'vue';
-import { useHouseInfoStore } from '@/stores/mapCard'; // Pinia store 가져오기
-import CardView from './CardView.vue';
-
-const coordinate = {
-  lat: 37.566826,
-  lng: 126.9786567,
-};
-
-// 필터 버튼 목록
-const filters = ['가격', '면적', '사용승인일', '층수'];
-
-// Pinia store 사용
-const houseInfoStore = useHouseInfoStore();
-
-// 데이터를 가져오는 함수
-const fetchData = async (type) => {
-  await houseInfoStore.fetchHouseInfo(type); // API 호출하여 데이터 가져오기
-  //console.log(houseInfoStore.houseInfos.data); // store의 houseInfos 상태 출력
-};
-
-onMounted(async () => {
-  await fetchData('아파트'); // 데이터가 로딩된 후 실행
-});
-
-// store에서 houseInfos 가져오기
-const houseInfos = houseInfoStore.houseInfos;
-
-</script>
->>>>>>> 6c2071d4ff1e5b7aacee95ac27651e9273893abb
