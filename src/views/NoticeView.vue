@@ -11,8 +11,8 @@ const activeTab = computed(() => store.activeTab);
 const setActiveTab = store.setActiveTab;
 
 const tabs = [
-  { id: "mainInfo", name: "주요 안내" },
-  { id: "notice", name: "공지사항 및 뉴스" },
+  { id: "mainInfo", name: "공지사항" },
+  { id: "notice", name: "최신 뉴스" },
   { id: "faq", name: "자주 묻는 질문" },
 ];
 </script>
