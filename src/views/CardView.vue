@@ -8,21 +8,21 @@
       <!-- 내용 섹션 -->
       <div class="ml-2">
         <span class="inline-flex mb-1 items-center text-xxs w-auto text-gray-600 border-2 border-gray-200 bg-white rounded-lg px-2 text-center">
-          아파트</span>
+          {{ buildingUse }}</span>
         <h5 class="text-lg font-bold text-gray-800 pl-1">아파트 이름</h5>
         <div class="pl-1">
           <span class="text-sm text-gray-600">
-            동작구</span>
+            {{ districtName }}</span>
           <span class="text-sm text-gray-600">
-            동자동</span>
+            {{ legalName }}</span>
         </div>
           <div class="pl-1">
             <span class="text-md">최소 </span>
-            <span class="text-sm">00</span>
+            <span class="text-sm">{{ minPropertyPrice }}</span>
             <span class="text-md">만원</span>
             <span class="text-md"> - </span>
             <span class="text-md">최대 </span>
-            <span class="text-sm">00</span>
+            <span class="text-sm">{{ maxPropertyPrice }}</span>
             <span class="text-md">만원</span>
           </div>
         <!-- 버튼 -->
@@ -31,32 +31,44 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    image: {
-      type: String,
-      required: true,
-    },
-    title: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-      required: true,
-    },
-    buttonText: {
-      type: String,
-      default: "Click Me",
-    },
-  },
-  methods: {
-    onButtonClick() {
-      this.$emit("button-click");
-    },
-  },
-};
+<script setup>
+
+// export default {
+//   props: {
+//     image: {
+//       type: String,
+//       required: true,
+//     },
+//     title: {
+//       type: String,
+//       required: true,
+//     },
+//     description: {
+//       type: String,
+//       required: true,
+//     },
+//     buttonText: {
+//       type: String,
+//       default: "Click Me",
+//     },
+//   },
+//   methods: {
+//     onButtonClick() {
+//       this.$emit("button-click");
+//     },
+//   },
+// };
+
+defineProps({
+  id: Number, // int → Number
+  buildingUse: String,
+  buildingName: String,
+  districtName: String,
+  legalName: String,
+  minPropertyPrice: Number, // double → Number
+  maxPropertyPrice: Number  // double → Number
+});
+
 </script>
 
 <style scoped>
