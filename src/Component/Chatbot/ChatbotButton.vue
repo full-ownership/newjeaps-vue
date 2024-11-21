@@ -114,7 +114,7 @@ const sendMessage = async () => {
     try {
       // GPT API 요청
       const response = await axios.post(
-        "https://75ec-121-147-32-107.ngrok-free.app/ask/",
+        "https://9ccf-121-147-32-107.ngrok-free.app/ask/",
         { query: currentMessage },
         {
           headers: {

@@ -1,3 +1,129 @@
+<<<<<<< HEAD
+<script setup>
+import { KakaoMap } from 'vue3-kakao-maps';
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import { useHouseInfoStore } from '@/stores/mapCard';
+
+const map = ref(null); // Kakao Map 객체
+const polygons = ref([]); // 생성된 폴리곤 객체 배열
+const detailMode = ref(false); // 상세 모드 여부
+const level = ref(12); // 현재 줌 레벨
+
+// 지도 로드 시 실행되는 콜백
+const onLoadKakaoMap = async (mapRef) => {
+  map.value = mapRef;
+
+  console.log('Kakao Map Loaded:', map.value);
+
+  // 초기 JSON 데이터를 사용해 폴리곤 생성
+  await init('/sido.json');
+
+  // 줌 레벨 변경 이벤트 등록
+  kakao.maps.event.addListener(map.value, 'zoom_changed', async () => {
+    level.value = map.value.getLevel(); // 현재 줌 레벨 업데이트
+    console.log('Zoom level changed:', level.value);
+
+    if (!detailMode.value && level.value <= 10) {
+      detailMode.value = true; // 상세 모드 활성화
+      removePolygon(); // 기존 폴리곤 제거
+      await init('/sig.json'); // 상세 데이터를 로드
+    } else if (detailMode.value && level.value > 10) {
+      detailMode.value = false; // 광역 모드 활성화
+      removePolygon(); // 기존 폴리곤 제거
+      await init('/sido.json'); // 광역 데이터를 로드
+    }
+  });
+};
+
+// JSON 데이터로 폴리곤 초기화
+const init = async (path) => {
+  try {
+    console.log('Fetching JSON from:', path);
+    const response = await axios.get(path);
+    const geojson = response.data;
+
+    console.log('Loaded JSON:', geojson);
+
+    // JSON 데이터를 기반으로 폴리곤 생성
+    const areas = geojson.features.map((unit) => {
+      const coordinates = unit.geometry.coordinates[0];
+      const name = unit.properties.SIG_KOR_NM;
+      const cd_location = unit.properties.SIG_CD;
+
+      const path = coordinates.map((coord) => new kakao.maps.LatLng(coord[1], coord[0]));
+      return { name, path, location: cd_location };
+    });
+
+    console.log('Parsed Areas:', areas);
+
+    areas.forEach(displayArea);
+  } catch (error) {
+    console.error(`Error loading JSON from ${path}:`, error);
+  }
+};
+
+// 폴리곤 제거
+const removePolygon = () => {
+  polygons.value.forEach((polygon) => polygon.setMap(null));
+  polygons.value = [];
+};
+
+// 폴리곤 생성 및 지도에 표시
+const displayArea = (area) => {
+  const polygon = new kakao.maps.Polygon({
+    path: area.path,
+    strokeWeight: 2,
+    strokeColor: '#5995ed',
+    strokeOpacity: 0.8,
+    fillColor: '#fff',
+    fillOpacity: 0.5,
+  });
+
+  polygon.setMap(map.value);
+  polygons.value.push(polygon);
+
+  console.log(`Polygon created for area: ${area.name}`);
+
+  // 이벤트 설정
+  kakao.maps.event.addListener(polygon, 'mouseover', () => {
+    polygon.setOptions({ fillColor: '#5995ed' });
+  });
+
+  kakao.maps.event.addListener(polygon, 'mouseout', () => {
+    polygon.setOptions({ fillColor: '#fff' });
+  });
+
+  kakao.maps.event.addListener(polygon, 'click', () => {
+    alert(`${area.name}을 클릭했습니다.`);
+  });
+};
+
+// 필터 버튼
+const filters = ['가격', '면적', '사용승인일', '층수'];
+
+// Pinia store 사용
+const houseInfoStore = useHouseInfoStore();
+
+// 데이터를 가져오는 함수
+const fetchData = async (type) => {
+  await houseInfoStore.fetchHouseInfo(type); // API 호출하여 데이터 가져오기
+  // console.log(houseInfoStore.houseInfos.data); // store의 houseInfos 상태 출력
+};
+
+onMounted(async () => {
+  await fetchData('아파트'); // 데이터가 로딩된 후 실행
+});
+
+// store에서 houseInfos 가져오기
+const houseInfos = houseInfoStore.houseInfos;
+</script>
+
+
+
+
+=======
+>>>>>>> 6c2071d4ff1e5b7aacee95ac27651e9273893abb
 <template>
   <div class="flex flex-row items-center w-full h-[100vh] pt-20">
     <!-- 버튼 영역 -->
@@ -60,6 +186,21 @@
             <FilterButton></FilterButton>
           </div>
           <!-- 목록 영역 추가할 수 있습니다 -->
+<<<<<<< HEAD
+          <div class="p-2">
+
+            <div v-if="houseInfosLoaded">
+              <div v-for="(house, index) in houseInfos.data" :key="index">
+                <p>{{ house.name }}</p>
+                <p>{{ house.price }}</p>
+              </div>
+            </div>
+
+            <!-- 데이터가 로딩 중일 때 표시할 로딩 화면 -->
+            <div v-else>
+              <p>로딩 중...</p>
+            </div>
+=======
           <div class="p-2 overflow-y-auto">
 
             <!--<div v-if="houseInfosLoaded">-->
@@ -80,19 +221,32 @@
 
             <!-- 데이터가 로딩 중일 때 표시할 로딩 화면 -->
         
+>>>>>>> 6c2071d4ff1e5b7aacee95ac27651e9273893abb
 
           </div>
         </div>
 
         <!-- 지도 표시 영역 -->
         <div class="relative w-full bg-purple-100">
+<<<<<<< HEAD
+          <KakaoMap
+    :lat="36.866826"
+    :lng="127.7786567"
+    :level="12"
+    @onLoadKakaoMap="onLoadKakaoMap"
+    style="width: 100%; height: 100vh;"
+  />
+=======
           <KakaoMap :lat="coordinate.lat" :lng="coordinate.lng" width="100%" height="100%"/>
+>>>>>>> 6c2071d4ff1e5b7aacee95ac27651e9273893abb
         </div>
       </div>
 
     </div>
   </div>
 </template>
+<<<<<<< HEAD
+=======
 
 <script setup>
 import { KakaoMap } from 'vue3-kakao-maps';
@@ -127,3 +281,4 @@ onMounted(async () => {
 const houseInfos = houseInfoStore.houseInfos;
 
 </script>
+>>>>>>> 6c2071d4ff1e5b7aacee95ac27651e9273893abb
