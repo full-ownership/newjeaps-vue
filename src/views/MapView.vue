@@ -60,19 +60,26 @@
             <FilterButton></FilterButton>
           </div>
           <!-- 목록 영역 추가할 수 있습니다 -->
-          <div class="p-2">
+          <div class="p-2 overflow-y-auto">
 
-            <div v-if="houseInfosLoaded">
+            <!--<div v-if="houseInfosLoaded">-->
               <div v-for="(house, index) in houseInfos.data" :key="index">
-                <p>{{ house.name }}</p>
-                <p>{{ house.price }}</p>
+
+                <CardView
+                  :id="house.id"
+                  :buildingUse="house.buildingUse"
+                  :buildingName="house.buildingName"
+                  :districtName="house.districtName"
+                  :legalName="house.legalName"
+                  :minPropertyPrice="house.minPropertyPrice"
+                  :maxPropertyPrice="house.maxPropertyPrice"
+                />
+        
               </div>
-            </div>
+            <!--</div>-->
 
             <!-- 데이터가 로딩 중일 때 표시할 로딩 화면 -->
-            <div v-else>
-              <p>로딩 중...</p>
-            </div>
+        
 
           </div>
         </div>
@@ -91,6 +98,7 @@
 import { KakaoMap } from 'vue3-kakao-maps';
 import { ref, onMounted } from 'vue';
 import { useHouseInfoStore } from '@/stores/mapCard'; // Pinia store 가져오기
+import CardView from './CardView.vue';
 
 const coordinate = {
   lat: 37.566826,
@@ -115,4 +123,5 @@ onMounted(async () => {
 
 // store에서 houseInfos 가져오기
 const houseInfos = houseInfoStore.houseInfos;
+
 </script>
