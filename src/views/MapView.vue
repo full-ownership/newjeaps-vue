@@ -121,6 +121,8 @@ onMounted(async () => {
   await fetchData('아파트'); // 데이터가 로딩된 후 실행
 });
 
+
+
 // store에서 houseInfos 가져오기
 const houseInfos = houseInfoStore.houseInfos;
 
