@@ -5,6 +5,7 @@ import LoginView from '../views/LoginView.vue'
 import MapView from '../views/MapView.vue'
 import NoticeView from '../views/NoticeView.vue'
 import IntroductionView from '@/views/IntroductionView.vue'
+import NoticeDetailView from '@/views/notice/NoticeDetailView.vue'
 
 const routes = [
   {
@@ -30,6 +31,11 @@ const routes = [
         path: 'notice',
         name: 'notice',
         component: NoticeView,
+      },
+      {
+        path: 'notice/:id',
+        name: 'noticeDetail',
+        component: NoticeDetailView,
       },
       {
         path: 'introduction',

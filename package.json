@@ -10,6 +10,7 @@
     "lint": "eslint . --fix"
   },
   "dependencies": {
+    "@rollup/rollup-darwin-arm64": "^4.27.3",
     "aos": "^2.3.4",
     "axios": "^1.7.7",
     "dotenv": "^16.4.5",
