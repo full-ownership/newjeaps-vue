@@ -9,7 +9,11 @@
       <div class="ml-2">
         <span class="inline-flex mb-1 items-center text-xxs w-auto text-gray-600 border-2 border-gray-200 bg-white rounded-lg px-2 text-center">
           {{ buildingUse }}</span>
+<<<<<<< HEAD
+        <h5 class="text-lg font-bold text-gray-800 pl-1">아파트 이름</h5>
+=======
         <h5 class="text-lg font-bold text-gray-800 pl-1">{{ buildingName }}</h5>
+>>>>>>> 6c2071d4ff1e5b7aacee95ac27651e9273893abb
         <div class="pl-1">
           <span class="text-sm text-gray-600">
             {{ districtName }}</span>
@@ -21,7 +25,11 @@
             <span class="text-sm">{{ minPropertyPrice }}</span>
             <span class="text-md">만원</span>
             <span class="text-md"> - </span>
+<<<<<<< HEAD
+            <span class="text-md">최대 </span>
+=======
             <span class="text-md">최대</span>
+>>>>>>> 6c2071d4ff1e5b7aacee95ac27651e9273893abb
             <span class="text-sm">{{ maxPropertyPrice }}</span>
             <span class="text-md">만원</span>
           </div>
@@ -34,6 +42,35 @@
 
 <script setup>
 
+<<<<<<< HEAD
+// export default {
+//   props: {
+//     image: {
+//       type: String,
+//       required: true,
+//     },
+//     title: {
+//       type: String,
+//       required: true,
+//     },
+//     description: {
+//       type: String,
+//       required: true,
+//     },
+//     buttonText: {
+//       type: String,
+//       default: "Click Me",
+//     },
+//   },
+//   methods: {
+//     onButtonClick() {
+//       this.$emit("button-click");
+//     },
+//   },
+// };
+
+=======
+>>>>>>> 6c2071d4ff1e5b7aacee95ac27651e9273893abb
 defineProps({
   id: Number, // int → Number
   buildingUse: String,
