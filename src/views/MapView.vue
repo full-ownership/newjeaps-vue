@@ -196,7 +196,7 @@ watch(() => state.value, (newValue) => {
 
       <!-- 필터 전체 버튼 -->
       <div class="flex flex-row items-center py-4 h-14 border-b border-gray-200">
-    
+
         <!--검색 창-->
         <div class="relative w-[370px] ml-4 mr-2">
           <input
@@ -225,7 +225,7 @@ watch(() => state.value, (newValue) => {
 
         <div v-for="(filter, index) in filters" :key="index" class="relative inline-block text-left ml-2">
             <!-- 버튼 -->
-            <button id="filterButton" type="button" 
+            <button id="filterButton" type="button"
                     class=" flex flex-row items-center w-full h-8 border border-gray-300 shadow-sm pl-2 text-xs font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
               <div> {{ filter }} </div>
               <svg class="h-4 w-6 text-gray-800" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -235,30 +235,30 @@ watch(() => state.value, (newValue) => {
             <!-- 아이콘 -->
              <div class="bg-white absolute z-10 w-[200px] h-[120px] top-10 left-0 hidden border-2 border-gray-200" id="rangeSlider">
                 <RangeSlider
-                v-model="state.value"  
-                style="width: 90%"  
-                exponential  
-                :max="10000"  
+                v-model="state.value"
+                style="width: 90%"
+                exponential
+                :max="10000"
                 class="m-auto mt-[25px]"
               >
                 <!-- 슬라이더 끝에 '$' 기호 표시 -->
                 <template #suffix>만원</template>
               </RangeSlider>
-                    
+
 
              </div>
-          
-              
-     
 
-            
-     
 
-          
-          
+
+
+
+
+
+
+
         </div>
 
-       
+
 
 
         <button type="button" class="relative inline-block text-left ml-2 h-8 px-2 py-2 bg-white border border-gray-300 shadow-sm focus:ring-indigo-500">
