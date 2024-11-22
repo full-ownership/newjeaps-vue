@@ -18,7 +18,7 @@ const goToDetail = (faqId) => {
   <div class="p-6 bg-gray-100 min-h-screen">
     <!-- 제목 및 검색 -->
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-xl font-bold text-gray-800">공지사항</h2>
+      <h2 class="text-xl font-bold text-gray-800">자주 묻는 질문</h2>
     </div>
 
     <!-- 공지사항 리스트 -->
