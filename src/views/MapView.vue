@@ -1,71 +1,79 @@
 <script setup>
-import { KakaoMap } from 'vue3-kakao-maps';
-import { ref, onMounted, computed , watch } from 'vue';
-import axios from 'axios';
-import { useHouseInfoStore } from '@/stores/mapCard';
-import CardView from './CardView.vue';
-import Button from '@/Component/Button/Button.vue';
-import 'vue-range-slider/dist/vue-range-slider.css'
+import { KakaoMap } from "vue3-kakao-maps";
+import { ref, onMounted, computed, watch, reactive } from "vue";
+import axios from "axios";
+import { useHouseInfoStore } from "@/stores/mapCard";
+import CardView from "./CardView.vue";
+import Button from "@/Component/Button/Button.vue";
+import "vue-range-slider/dist/vue-range-slider.css";
+import RangeSlider from "vue-simple-range-slider";
+import "vue-simple-range-slider/css";
 
 const map = ref(null); // Kakao Map 객체
 const polygons = ref([]); // 생성된 폴리곤 객체 배열
-const detailMode = ref(false); // 상세 모드 여부
+const overlays = ref([]); // 생성된 오버레이 객체 배열
 const level = ref(12); // 현재 줌 레벨
+const detailMode = ref(""); // 어떤 경계를 보여줄지 (도, 시, 구)
 
 const onLoadKakaoMap = async (mapRef) => {
   map.value = mapRef;
+  console.log("Kakao Map Loaded:", map.value);
 
-  console.log('Kakao Map Loaded:', map.value);
+  // 초기 로딩 시 sido.json으로 도 경계선 로드
+  await init("/sido.json");
 
-  await init('/sido.json');
-
-  kakao.maps.event.addListener(map.value, 'zoom_changed', async () => {
+  kakao.maps.event.addListener(map.value, "zoom_changed", async () => {
     level.value = map.value.getLevel();
-    console.log('Zoom level changed:', level.value);
+    console.log("Zoom level changed:", level.value);
 
-    if (!detailMode.value && level.value <= 10) {
-      detailMode.value = true;
-      removePolygon();
-      await init('/sig.json');
-    } else if (detailMode.value && level.value > 10) {
-      detailMode.value = false;
-      removePolygon();
-      await init('/sido.json');
+    // 줌 레벨 10 이상이면 도 경계 (sido.json)로 로드, 10 미만이면 시/구 경계 (sig.json)
+    if (level.value >= 10) {
+      if (detailMode.value !== "do") {
+        detailMode.value = "do";
+        removePolygon();  // 기존 폴리곤 제거
+        removeOverlays(); // 기존 오버레이 제거
+        await init("/sido.json");  // 도 경계로 변경
+      }
+    } else {
+      if (detailMode.value !== "sig") {
+        detailMode.value = "sig";
+        removePolygon();  // 기존 폴리곤 제거
+        removeOverlays(); // 기존 오버레이 제거
+        await init("/sig.json");  // 시/구 경계로 변경
+      }
     }
   });
 };
 
-// JSON 데이터로 폴리곤 초기화
+// 폴리곤 초기화 함수
 const init = async (path) => {
   try {
-    console.log('Fetching JSON from:', path);
+    console.log("Fetching JSON from:", path);
     const response = await axios.get(path);
     const geojson = response.data;
 
-    console.log('Loaded JSON:', geojson);
+    console.log("Loaded JSON:", geojson);
 
     // JSON 데이터를 기반으로 폴리곤 생성
     const areas = geojson.features.map((unit) => {
       const coordinates = unit.geometry.coordinates[0];
-      const name = unit.properties.SIG_KOR_NM;
+      const name = unit.properties.SIG_KOR_NM; // 도 이름
       const cd_location = unit.properties.SIG_CD;
 
-      const path = coordinates.map((coord) => new kakao.maps.LatLng(coord[1], coord[0]));
+      const path = coordinates.map(
+        (coord) => new kakao.maps.LatLng(coord[1], coord[0])
+      );
+
       return { name, path, location: cd_location };
     });
 
-    console.log('Parsed Areas:', areas);
+    console.log("Parsed Areas:", areas);
 
+    // 각 경계에 대해 폴리곤 생성 및 중앙에 오버레이 추가
     areas.forEach(displayArea);
   } catch (error) {
     console.error(`Error loading JSON from ${path}:`, error);
   }
-};
-
-
-const removePolygon = () => {
-  polygons.value.forEach((polygon) => polygon.setMap(null));
-  polygons.value = [];
 };
 
 // 폴리곤 생성 및 지도에 표시
@@ -73,9 +81,9 @@ const displayArea = (area) => {
   const polygon = new kakao.maps.Polygon({
     path: area.path,
     strokeWeight: 2,
-    strokeColor: '#5995ed',
+    strokeColor: "#5995ed",
     strokeOpacity: 0.8,
-    fillColor: '#fff',
+    fillColor: "#fff",
     fillOpacity: 0.5,
   });
 
@@ -84,23 +92,71 @@ const displayArea = (area) => {
 
   console.log(`Polygon created for area: ${area.name}`);
 
+  // 중심 좌표 계산
+  const calculateCenter = (coordinates) => {
+    let totalLat = 0;
+    let totalLng = 0;
+
+    coordinates.forEach((coord) => {
+      totalLat += coord.getLat();
+      totalLng += coord.getLng();
+    });
+
+    const centerLat = totalLat / coordinates.length;
+    const centerLng = totalLng / coordinates.length;
+
+    return new kakao.maps.LatLng(centerLat + 0.1, centerLng); // 약간의 오프셋을 주어 정확한 중심을 맞춤
+  };
+
+  // 폴리곤의 중앙 좌표 계산
+  const center = calculateCenter(area.path);
+
+  // 오버레이 생성
+  const customOverlay = new kakao.maps.CustomOverlay({
+    position: center, // 오버레이 위치는 계산된 중심
+    content: `<div style="padding:8px 16px; background:#fff; border:2px solid #5995ed; border-radius:25px; color:#5995ed; font-size:14px; font-weight:600; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+      ${area.name}
+    </div>`,
+    map: map.value,
+  });
+
+  overlays.value.push(customOverlay); // 오버레이 배열에 추가
+
   // 이벤트 설정
-  kakao.maps.event.addListener(polygon, 'mouseover', () => {
-    polygon.setOptions({ fillColor: '#5995ed' });
+  kakao.maps.event.addListener(polygon, "mouseover", () => {
+    polygon.setOptions({ fillColor: "#5995ed" });
   });
 
-  kakao.maps.event.addListener(polygon, 'mouseout', () => {
-    polygon.setOptions({ fillColor: '#fff' });
+  kakao.maps.event.addListener(polygon, "mouseout", () => {
+    polygon.setOptions({ fillColor: "#fff" });
   });
 
-  kakao.maps.event.addListener(polygon, 'click', () => {
-    alert(`${area.name}을 클릭했습니다.`);
+  kakao.maps.event.addListener(polygon, "click", () => {
+    console.log(`${area.name} clicked!`);
+    if (map.value) {
+      // 중심 좌표로 지도 이동 및 줌 레벨 변경
+      map.value.panTo(center);
+      map.value.setLevel(map.value.getLevel() - 3); // 최소 레벨 1로 제한
+    } else {
+      console.error("Map object is not initialized.");
+    }
   });
 };
 
+// 폴리곤 제거
+const removePolygon = () => {
+  polygons.value.forEach((polygon) => polygon.setMap(null));
+  polygons.value = [];
+};
+
+// 오버레이 제거
+const removeOverlays = () => {
+  overlays.value.forEach((overlay) => overlay.setMap(null));
+  overlays.value = [];
+};
 
 // 필터 버튼
-const filters = ['가격', '면적', '사용승인일', '층수'];
+const filters = ["가격", "면적", "사용승인일", "층수"];
 
 // Pinia store 사용
 const houseInfoStore = useHouseInfoStore();
@@ -108,12 +164,12 @@ const houseInfoStore = useHouseInfoStore();
 // 데이터를 가져오는 함수
 const fetchData = async (type) => {
   await houseInfoStore.fetchHouseInfo(type); // API 호출하여 데이터 가져오기
-  console.log('동작!')
+  console.log("동작!");
   console.log(houseInfoStore.houseInfos); // store의 houseInfos 상태 출력
 };
 
 onMounted(async () => {
-  await fetchData('아파트'); // 데이터가 로딩된 후 실행
+  await fetchData("아파트"); // 데이터가 로딩된 후 실행
 });
 
 // store에서 houseInfos 가져오기
@@ -121,37 +177,33 @@ const houseInfos = computed(() => houseInfoStore.houseInfos);
 
 // DOMContentLoaded 이벤트는 HTML 문서의 모든 콘텐츠가 완전히 로드되었을 때 발생함
 document.addEventListener("DOMContentLoaded", () => {
-const filterButton = document.getElementById("filterButton");
-const rangeSlider = document.getElementById("rangeSlider");
+  const filterButton = document.getElementById("filterButton");
+  const rangeSlider = document.getElementById("rangeSlider");
 
   // 이제 filterButton이 존재하므로 이벤트 리스너를 안전하게 추가할 수 있습니다.
   filterButton.addEventListener("click", () => {
-    console.log('클릭')
+    console.log("클릭");
     if (rangeSlider.classList.contains("hidden")) {
       rangeSlider.classList.remove("hidden");
     } else {
       rangeSlider.classList.add("hidden");
     }
-
   });
 });
 
-import RangeSlider from 'vue-simple-range-slider';
-import 'vue-simple-range-slider/css';
-import { reactive } from 'vue';
 // 슬라이더 값을 반응형으로 관리
 const state = reactive({
-  value: [10, 100],  // 범위 슬라이더의 두 값
-  valuee : 40,
+  value: [10, 100], // 범위 슬라이더의 두 값
 });
 
-
 // state.value가 변경될 때마다 콘솔에 값 출력
-watch(() => state.value, (newValue) => {
-  console.log('선택한 값:', newValue);
-}, { deep: true });
-
-
+watch(
+  () => state.value,
+  (newValue) => {
+    console.log("선택한 값:", newValue);
+  },
+  { deep: true }
+);
 </script>
 
 
@@ -248,18 +300,7 @@ watch(() => state.value, (newValue) => {
 
              </div>
 
-
-
-
-
-
-
-
-
         </div>
-
-
-
 
         <button type="button" class="relative inline-block text-left ml-2 h-8 px-2 py-2 bg-white border border-gray-300 shadow-sm focus:ring-indigo-500">
           <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
