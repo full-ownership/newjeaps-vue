@@ -24,6 +24,7 @@
     "vue-fullpage.js": "^0.2.20",
     "vue-range-slider": "^0.6.0",
     "vue-router": "^4.4.5",
+    "vue-simple-range-slider": "^1.1.0",
     "vue-typer": "^1.2.0",
     "vue3-kakao-maps": "^2.3.10"
   },
