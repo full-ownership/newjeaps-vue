@@ -11,13 +11,12 @@ const router = useRouter();
 
 // Google OAuth2 인증 URL로 리다이렉트
 const redirectToGoogleAuth = () => {
-  const googleAuthUrl = 'https://back.newjeaps.com/api/oauth2/authorize/google';
+  const googleAuthUrl = 'http://localhost:8080/api/oauth2/authorize/google';
   window.location.href = googleAuthUrl; // 해당 URL로 이동
 };
 </script>
 
 <template>
-
     <div class="login-container flex justify-center h-[100vh] pt-32 pb-32 bg-pink-200">
       <div class="login-card bg-yellow-400 w-[30%] p-4 flex flex-col justify-center align-center">
         <div>
@@ -47,16 +46,9 @@ const redirectToGoogleAuth = () => {
           @click="redirectToGoogleAuth"/>
         </div>
       </div>
-
-      <!-- 구글 로그인 -->
-      <button class="google-button">
-        <img alt="Google Login" :src="googleBtn" class="google-button-img" />
-      </button>
     </div>
   
 </template>
-
-
 
   <style scoped>
 

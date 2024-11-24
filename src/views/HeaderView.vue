@@ -7,13 +7,21 @@
       <nav class="md:ml-auto flex flex-wrap items-center text-base justify-center">
         <a @click="goToMapView" href="" class="mr-5 hover:text-gray-900">지도</a>
         <a @click="goToIntroductionView" class="mr-5 hover:text-gray-900">회사소개</a>
+        <div>
+      <div v-if="userStore.userInfos.data.nickname">
+        <button @click="goToMyPage">
+        {{ userStore.userInfos.data.nickname}}
+        </button>
+      </div>
+      <div v-else>
         <button
-          type="button"
-          class="mb-0 text-grey bg-white-400 hover:bg-blue-400 hover:text-white border focus:outline-none focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center dark:hover:bg-blue-700 dark:focus:white"
-          @click="goToLogin"
-        >
+        type="button"
+        class="mb-0 text-grey bg-white-400 hover:bg-blue-400 hover:text-white border focus:outline-none focus:ring-blue-300 font-medium text-sm px-5 py-2.5 text-center dark:hover:bg-blue-700 dark:focus:white"
+        @click="goToLogin">
           로그인 | 회원가입
         </button>
+      </div>
+  </div>
       </nav>
     </div>
   </header>
@@ -21,6 +29,9 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/userStore'; // Pinia 스토어 import
+import { onMounted } from 'vue';
+
 
 const router = useRouter();
 
@@ -41,5 +52,18 @@ const goToMapView = () => {
 const goToIntroductionView = () =>{
   router.push({name: 'introduction'})
 }
+
+const goToMyPage = () => {
+  console.log("마이페이지로 가자")
+  router.push({name: 'mypage'})
+}
+
+const userStore = useUserStore();
+
+// 컴포넌트가 마운트될 때 사용자 닉네임 가져오기
+onMounted(async () => {
+  await userStore.fetchUserInfo(); // 닉네임 가져오기
+  console.log(userStore.userInfos.data.nickname);
+});
 
 </script>
