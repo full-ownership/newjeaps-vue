@@ -10,7 +10,8 @@ export const useHouseInfoStore = defineStore('houseInfo', {
     async fetchHouseInfo(type) {
       try {
         // URL을 BASE_URL과 합쳐서 사용
-        
+        console.log("맵카드")
+        console.log(apiClient)
         const response = await apiClient.get(`/api/houseinfos/${type}`);
         // response.data.data를 houseInfos에 할당 (주요 수정 부분)
         this.houseInfos= response.data.data;

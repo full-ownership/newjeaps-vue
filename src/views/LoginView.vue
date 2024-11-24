@@ -11,7 +11,7 @@ const router = useRouter();
 
 // Google OAuth2 인증 URL로 리다이렉트
 const redirectToGoogleAuth = () => {
-  const googleAuthUrl = 'http://localhost:8080/api/oauth2/authorize/google';
+  const googleAuthUrl = 'https://back.newjeaps.com/api/oauth2/authorize/google';
   window.location.href = googleAuthUrl; // 해당 URL로 이동
 };
 </script>

@@ -11,7 +11,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://211.117.197.184:70', // 첫 번째 서버 주소
+        target: 'https://back.newjeaps.com', // 첫 번째 서버 주소
         changeOrigin: true,
         secure: true,  // https 사용하지 않는 경우 false로 설정
         rewrite: (path) => path.replace(/^\/api/, ''), // 프록시 경로를 적절히 수정
