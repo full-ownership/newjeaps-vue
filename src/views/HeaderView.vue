@@ -5,7 +5,7 @@
         <img alt="logo" src="@/assets/img/logo.png" class="w-24 -mr-1" @click="goToHome" />
       </div>
       <nav class="md:ml-auto flex flex-wrap items-center text-base justify-center">
-        <a @click="goToMapView" href="" class="mr-5 hover:text-gray-900">지도</a>
+        <a @click="goToMapView('아파트')" href="" class="mr-5 hover:text-gray-900">지도</a>
         <a @click="goToIntroductionView" class="mr-5 hover:text-gray-900">회사소개</a>
         <div>
       <div v-if="userStore.userInfos.data.nickname">
@@ -39,14 +39,15 @@ const goToHome = () => {
   router.push({ name: 'home' });
 };
 
-
 const goToLogin = () => {
   console.log('Login button clicked');
   router.push({ name: 'login' });
 };
 
-const goToMapView = () => {
-  router.push({name: 'map'});
+const goToMapView = (param) => {
+  //console.log('mapView 등장')
+  console.log(param)
+  router.push({ name: 'map', params: {param} } );
 }
 
 const goToIntroductionView = () =>{
@@ -54,7 +55,6 @@ const goToIntroductionView = () =>{
 }
 
 const goToMyPage = () => {
-  console.log("마이페이지로 가자")
   router.push({name: 'mypage'})
 }
 
