@@ -9,35 +9,43 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-const goToSignup = () => {
-  router.push({ name: 'signup' });
+// Google OAuth2 인증 URL로 리다이렉트
+const redirectToGoogleAuth = () => {
+  const googleAuthUrl = 'https://back.newjeaps.com/api/oauth2/authorize/google';
+  window.location.href = googleAuthUrl; // 해당 URL로 이동
 };
 </script>
 
 <template>
-  <div class="login-container pt-32 pb-32">
-    <div class="login-card">
-      <!-- 로그인 이미지 -->
-      <img alt="Login Illustration" :src="loginImg" class="login-image" />
 
-      <!-- 로고 -->
-      <img alt="Logo" :src="logo" class="login-logo" />
+    <div class="login-container flex justify-center h-[100vh] pt-32 pb-32 bg-pink-200">
+      <div class="login-card bg-yellow-400 w-[30%] p-4 flex flex-col justify-center align-center">
+        <div>
+          <img alt="loginImg" :src="loginImg" class="login-image mb-6" />
+        </div>
+        
+        <div class="mb-6 flex justify-center">
+          <img alt="logo" :src="logo" class="logo" width="150"/>
+        </div>
+        
 
-      <!-- 카카오 로그인 -->
-      <button class="login-button">
-        <img alt="Kakao Login" :src="kakaoBtn" class="login-button-img" />
-      </button>
+        <div class="mb-2">
+          <img alt="kakao" :src="kakaoBtn" class="kakao-button" />
+        </div>
 
-      <!-- 이메일 로그인 -->
-      <button @click="goToSignup" class="login-button">
-        <img alt="Email Login" :src="emailBtn" class="login-button-img" />
-      </button>
+        <div class="mb-2">
+          <img alt="email" :src="emailBtn" class="email-button" />
+        </div>
 
-      <!-- 구분선 -->
-      <div class="separator">
-        <div class="separator-line"></div>
-        <span class="separator-text">또는</span>
-        <div class="separator-line"></div>
+        <div class="separator">
+          <div class="separator-line"></div>
+          <div class="separator-text text-center">또는</div>
+          <div class="separator-line"></div>
+        </div>
+        <div class="bg-blue-400 flex justify-center">
+          <img alt="google" :src="googleBtn" class="google-button w-[40px]" 
+          @click="redirectToGoogleAuth"/>
+        </div>
       </div>
 
       <!-- 구글 로그인 -->
@@ -45,89 +53,11 @@ const goToSignup = () => {
         <img alt="Google Login" :src="googleBtn" class="google-button-img" />
       </button>
     </div>
-  </div>
+  
 </template>
 
-<style scoped>
-/* 전체 컨테이너 */
-.login-container {
-  display: flex;
-  justify-content: center;
-  font-family: 'PretendardRegular', sans-serif;
-  background-color: #f9f9f9;
-}
 
-/* 로그인 카드 */
-.login-card {
-  border: 1px solid #ddd;
-  background: #fff;
-  width: 25%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 24px;
-  margin: 64px 0;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
 
-/* 로그인 이미지 */
-.login-image {
-  width: 100%;
-  margin-bottom: 28px;
-}
+  <style scoped>
 
-/* 로고 */
-.login-logo {
-  width: 33%;
-  margin-bottom: 28px;
-}
-
-/* 버튼 */
-.login-button {
-  width: 100%;
-  margin-top: 16px;
-  border: none;
-  background: none;
-  padding: 0;
-  cursor: pointer;
-}
-
-.login-button-img {
-  width: 100%;
-  display: block;
-}
-
-/* 구글 버튼 */
-.google-button {
-  width: 100%;
-  margin-top: 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.google-button-img {
-  width: 40px;
-}
-
-/* 구분선 */
-.separator {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  margin: 16px 0;
-}
-
-.separator-line {
-  flex-grow: 1;
-  border-top: 1px solid #ddd;
-}
-
-.separator-text {
-  font-size: 12px;
-  color: #999;
-  margin: 0 8px;
-  white-space: nowrap;
-}
-</style>
+  </style>
