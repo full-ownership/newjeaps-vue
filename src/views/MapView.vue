@@ -206,17 +206,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // 슬라이더 값을 반응형으로 관리
 const state = reactive({
-  value: [10, 100], // 범위 슬라이더의 두 값
+  value: [10, 100],
+  value2: [10, 100]
 });
 
-// state.value가 변경될 때마다 콘솔에 값 출력
-watch(
-  () => state.value,
-  (newValue) => {
-    console.log("선택한 값:", newValue);
-  },
-  { deep: true }
-);
 </script>
 
 
@@ -298,21 +291,19 @@ watch(
               </svg>
             </button>
             <!-- 아이콘 -->
-             <div class="bg-white absolute z-10 w-[200px] h-[120px] top-10 left-0 hidden border-2 border-gray-200" id="rangeSlider">
-                <RangeSlider
+            <div 
+              class="bg-white absolute z-10 w-[200px] h-[120px] top-10 left-0 border-2 border-gray-200"
+              v-if="isSliderVisible">
+              <RangeSlider
                 v-model="state.value"
-                style="width: 90%"
+                style="width: 100%"
                 exponential
-                :max="10000"
-                class="m-auto mt-[25px]"
-              >
-                <!-- 슬라이더 끝에 '$' 기호 표시 -->
+                :max="1000000000">
                 <template #suffix>만원</template>
               </RangeSlider>
-
-
-             </div>
-
+              <span>{{ state.value[0] }} 만원</span> - 
+              <span>{{ state.value[1] }} 만원</span>
+            </div>
         </div>
 
         <button type="button" class="relative inline-block text-left ml-2 h-8 px-2 py-2 bg-white border border-gray-300 shadow-sm focus:ring-indigo-500">
@@ -333,10 +324,31 @@ watch(
           </div>
           <!-- 목록 영역 추가할 수 있습니다 -->
           <div class="p-2 overflow-auto">
-   
+            <div class="text-center mt-2">
+      <!-- <span>최소: {{ state.value[0] }} 만원</span> - 
+      <span>최대: {{ state.value[1] }} 만원</span>
 
+      <span>최소: {{ state.value2[0] }} 만원</span> - 
+      <span>최대: {{ state.value2[1] }} 만원</span> -->
+      <!-- <RangeSlider
+      v-model="state.value"
+      style="width: 100%"
+      exponential
+      :max="1000000000"
+    >
+      <template #suffix>만원</template>
+    </RangeSlider> -->
 
-
+    <RangeSlider
+      v-model="state.value2"
+      style="width: 100%"
+      exponential
+      :max="1000000000"
+    >
+      <template #suffix>만원</template>
+    </RangeSlider>
+    </div>
+  
               <div v-for="house in houseInfos" :key="house.id">
                 <CardView
                 :id="house.id"
@@ -348,25 +360,6 @@ watch(
                 :maxPropertyPrice="house.maxPropertyPrice"
               />
               </div>
-
-              <!-- <div v-if="isLoading">
-                데이터 로드 중...
-              </div>
-              <div v-else>
-                <div v-for="(house, index) in houseInfos" :key="index">
-                  <CardView
-                    :id="house.id"
-                    :buildingUse="house.buildingUse"
-                    :buildingName="house.buildingName"
-                    :districtName="house.districtName"
-                    :legalName="house.legalName"
-                    :minPropertyPrice="house.minPropertyPrice"
-                    :maxPropertyPrice="house.maxPropertyPrice"
-                  />
-                </div>
-              </div> -->
-
-
           </div>
         </div>
 

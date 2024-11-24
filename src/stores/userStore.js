@@ -10,6 +10,7 @@ export const useUserStore = defineStore('userInfo', {
     async fetchUserInfo() {
       try {
         // URL을 BASE_URL과 합쳐서 사용
+        console.log("userStore 동작")
         const response = await apiClient.get(`/api/members/nickname`);
         // response.data.data를 houseInfos에 할당 (주요 수정 부분)
         this.userInfos.data = response.data.data;
