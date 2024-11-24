@@ -13,7 +13,7 @@ import ChatbotButton from './Component/Chatbot/ChatbotButton.vue'
     <!-- <HeaderView /> -->
     <HeaderView />
     <MainView />
-    <FooterView />
+
   </div>
 </template>
 <style scoped>

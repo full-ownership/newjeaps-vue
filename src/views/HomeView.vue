@@ -14,12 +14,20 @@ const router = useRouter();
 const goToNotice = () => {
   router.push({ name: "notice" });
 };
+
+const goToMapView = (param) => {
+  //console.log('mapView 등장')
+  console.log(param)
+  router.push({ name: 'map', params: {param} } );
+}
+
 </script>
 
 <template>
-  <div class="flex bg-gray-100 h-[100vh] min-w-screen-md pb-32">
+  <div class="flex bg-gray-100 h-[100vh] items-center justify-center
+  ">
     <!-- 헤더 높이만큼 상단 패딩 추가 -->
-    <div class="w-2/3 m-auto flex flex-col items-center">
+    <div class="w-[75vw] mx-auto flex flex-col  items-center p-12 ">
       <!-- 서치바 영역 -->
       <form class="items-center max-w-lg mx-auto w-2/3 mb-10">
         <label for="simple-search" class="sr-only">Search</label>
@@ -55,7 +63,7 @@ const goToNotice = () => {
       <div class="flex flex-col justify-around w-full">
         <div class="grid grid-cols-9 gap-3 w-full">
           <!-- 아파트 카드 -->
-          <div class="card bg-white h-40 col-span-3 row-span-2 rounded-lg p-6 cursor-pointer">
+          <div class="card bg-white h-40 col-span-3 row-span-2 rounded-lg p-6 cursor-pointer" @click="goToMapView('아파트')">
             <div class="font-PretendardSemiBold text-xl mb-2">아파트</div>
             <p class="font-PretendardRegular text-xs text-gray-700 mb-1">아파트 아파트 ~! 아파트는 hold on 아시죠?</p>
             <p class="font-PretendardRegular text-xs text-gray-700">풍부한 단지정보 및 실시간 랭킹까지-</p>
@@ -65,7 +73,7 @@ const goToNotice = () => {
           </div>
 
           <!-- 연립 다세대 카드 -->
-          <div class="card bg-white h-40 col-span-2 row-span-2 rounded-lg p-6 cursor-pointer">
+          <div class="card bg-white h-40 col-span-2 row-span-2 rounded-lg p-6 cursor-pointer" @click="goToMapView('연립다세대')">
             <div class="font-PretendardSemiBold text-xl mb-1">연립 다세대</div>
             <p class="font-PretendardRegular text-xs text-gray-700 mb-1">오피스텔 정보</p>
             <p class="font-PretendardRegular text-xs text-gray-700 mb-1">오피스텔 정보 여기 다!</p>
@@ -77,7 +85,7 @@ const goToNotice = () => {
           <div class="card bg-white h-50 col-span-4 row-span-3 rounded-lg p-8"></div>
 
           <!-- 단독/다가구 카드 -->
-          <div class="card bg-white h-40 col-span-2 row-span-2 rounded-lg p-8 cursor-pointer">
+          <div class="card bg-white h-40 col-span-2 row-span-2 rounded-lg p-8 cursor-pointer" @click="goToMapView('단독다가구')">
             <div class="font-PretendardSemiBold text-xl mb-2">단독/다가구</div>
             <p class="font-PretendardRegular text-xs text-gray-700 mb-1">오피스텔 정보</p>
             <p class="font-PretendardRegular text-xs text-gray-700 mb-1">오피스텔 정보 여기 다!</p>
@@ -87,7 +95,7 @@ const goToNotice = () => {
           </div>
 
           <!-- 오피스텔 카드 -->
-          <div class="card bg-white h-40 col-span-3 row-span-2 rounded-lg p-8 cursor-pointer">
+          <div class="card bg-white h-40 col-span-3 row-span-2 rounded-lg p-8 cursor-pointer" @click="goToMapView('오피스텔')">
             <div class="font-PretendardSemiBold text-xl mb-2">오피스텔</div>
             <p class="font-PretendardRegular text-xs text-gray-700 mb-1">오피스텔 정보</p>
             <p class="font-PretendardRegular text-xs text-gray-700 mb-1">오피스텔 정보 여기 다!</p>

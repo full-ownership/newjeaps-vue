@@ -10,6 +10,7 @@
     "lint": "eslint . --fix"
   },
   "dependencies": {
+    "@vueform/slider": "^2.1.10",
     "aos": "^2.3.4",
     "axios": "^1.7.7",
     "dotenv": "^16.4.5",
@@ -21,7 +22,9 @@
     "typed.js": "^2.1.0",
     "vue": "^3.5.12",
     "vue-fullpage.js": "^0.2.20",
+    "vue-range-slider": "^0.6.0",
     "vue-router": "^4.4.5",
+    "vue-simple-range-slider": "^1.1.0",
     "vue-typer": "^1.2.0",
     "vue3-kakao-maps": "^2.3.10"
   },

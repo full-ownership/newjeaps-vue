@@ -35,6 +35,8 @@ jobs:
   
           # 종속성 재설치
           npm install
+          npm install vue-simple-range-slider
+
 
       - name: Build the Vue app
         run: npm run build

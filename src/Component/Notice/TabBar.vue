@@ -6,7 +6,7 @@
       @click="$emit('changeTab', tab.id)"
       :class="[
         'px-6 py-2 font-medium',
-        activeTab === tab.id ? 'border-b-2 border-black text-black' : 'text-gray-500',
+        activeTab === tab.id ? 'border-b-4  border-[#5995ED] text-black' : 'text-gray-500',
       ]"
       class="transition"
     >

@@ -21,7 +21,7 @@ const searchNotices = () => {
 
 //디테일 가즈아
 const goToDetail = (noticeId) => {
-  router.push(`/notice/${noticeId}`);
+  router.push(`/notice/noticeDetail/${noticeId}`);
 }
 
 </script>

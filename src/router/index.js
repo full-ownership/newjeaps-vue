@@ -6,6 +6,9 @@ import MapView from '../views/MapView.vue'
 import NoticeView from '../views/NoticeView.vue'
 import IntroductionView from '@/views/IntroductionView.vue'
 import NoticeDetailView from '@/views/notice/NoticeDetailView.vue'
+import FaqDetailView from '@/views/notice/FaqDetailView.vue'
+import SignupView from '@/views/Signup/SignupView.vue'
+import MyPageView from '@/views/MyPageView.vue'
 
 const routes = [
   {
@@ -23,7 +26,7 @@ const routes = [
         component: LoginView,
       },
       {
-        path: 'map',
+        path: 'map/:param', // :param은 동적 라우트 파라미터
         name: 'map',
         component: MapView,
       },
@@ -33,14 +36,30 @@ const routes = [
         component: NoticeView,
       },
       {
-        path: 'notice/:id',
+        path: 'notice/noticeDetail/:id',
         name: 'noticeDetail',
         component: NoticeDetailView,
+      },
+
+      {
+        path: 'notice/faqDetail/:id',
+        name: 'faqDetail',
+        component: FaqDetailView,
+      },
+      {
+        path: 'signup',
+        name: 'signup',
+        component: SignupView,
       },
       {
         path: 'introduction',
         name: 'introduction',
         component: IntroductionView,
+      },
+      {
+        path: 'mypage',
+        name: 'mypage',
+        component: MyPageView
       }
     ],
   },
