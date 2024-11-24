@@ -26,7 +26,7 @@ const routes = [
         component: LoginView,
       },
       {
-        path: 'map',
+        path: 'map/:param', // :param은 동적 라우트 파라미터
         name: 'map',
         component: MapView,
       },

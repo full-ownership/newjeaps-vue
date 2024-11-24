@@ -8,6 +8,8 @@ import Button from "@/Component/Button/Button.vue";
 import "vue-range-slider/dist/vue-range-slider.css";
 import RangeSlider from "vue-simple-range-slider";
 import "vue-simple-range-slider/css";
+import { useRoute } from 'vue-router';
+
 
 const map = ref(null); // Kakao Map 객체
 const polygons = ref([]); // 생성된 폴리곤 객체 배열
@@ -170,9 +172,18 @@ const fetchData = async (type) => {
   
 };
 
+const route = useRoute();
+// params로 전달된 "param" 값
+
+
+// 문자열로 변환된 buildingUse
+const buildingUse = route.params.param;
+
+console.log('전달된 파라미터:', buildingUse); // 디버깅용
+
 onMounted(async () => {
   isLoading.value = false;
-  await fetchData("아파트"); // 데이터 로드
+  await fetchData(buildingUse); // 데이터 로드
   isLoading.value = true;
 });
 
@@ -184,18 +195,17 @@ watch(
   { immediate: true } // 즉시 실행
 );
 
-
 // store에서 houseInfos 가져오기
 const houseInfos = computed(() => houseInfoStore.houseInfos);
 
 // DOMContentLoaded 이벤트는 HTML 문서의 모든 콘텐츠가 완전히 로드되었을 때 발생함
 document.addEventListener("DOMContentLoaded", () => {
+
   const filterButton = document.getElementById("filterButton");
   const rangeSlider = document.getElementById("rangeSlider");
 
   // 이제 filterButton이 존재하므로 이벤트 리스너를 안전하게 추가할 수 있습니다.
   filterButton.addEventListener("click", () => {
-    console.log("클릭");
     if (rangeSlider.classList.contains("hidden")) {
       rangeSlider.classList.remove("hidden");
     } else {
@@ -204,14 +214,42 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// 슬라이더 값을 반응형으로 관리
 const state = reactive({
-  value: [10, 100],
-  value2: [10, 100]
+  가격: [0, 10000000], // 초기값
+  면적: [0, 10000000],
+  사용승인일: [0, 10000000],
+  층수: [0, 10000000],
 });
 
-</script>
+const isSliderVisible = ref(""); // 현재 열려 있는 슬라이더 필터 이름
 
+const toggleSlider = (filter) => {
+  if (isSliderVisible.value === filter) {
+    // 이미 열려 있는 슬라이더를 클릭하면 닫음
+    isSliderVisible.value = "";
+  } else {
+    // 다른 슬라이더를 클릭하면 현재 슬라이더를 열고, 나머지는 닫음
+    isSliderVisible.value = filter;
+  }
+};
+
+const applyFilter = () => {
+  for (const [key, value] of Object.entries(state)) {
+    console.log(`${key}: ${value[0]} ~ ${value[1]}`);
+    //console.log(`${value[0]}`)
+  }
+};
+
+const initFilter = () => {
+  for (const [key, value] of Object.entries(state)) {
+    value[0] = 0;
+    value[1] = 10000000;
+    console.log(`${key}: ${value[0]} ~ ${value[1]}`);
+    //console.log(`${value[0]}`)
+  } 
+}
+
+</script>
 
 <template>
   <div class="flex flex-row items-center w-full h-[100vh] pt-20">
@@ -251,63 +289,77 @@ const state = reactive({
 
     <!-- 지도 및 필터 영역 -->
     <div class="flex flex-col justify-start w-full h-full">
-
       <!-- 필터 전체 버튼 -->
       <div class="flex flex-row items-center py-4 h-14 border-b border-gray-200">
-
         <!--검색 창-->
         <div class="relative w-[370px] ml-4 mr-2">
           <input
             type="text"
             placeholder="찾고자하는 아파트 이름을 입력하세요"
-            class="w-full h-8 px-4 pr-10 text-sm text-gray-700 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          />
-        <button
-          type="button"
-          class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-gray-700">
-            <svg
-              class="w-4 h-4"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 20 20">
-              <path
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 19l-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+            class="w-full h-8 px-4 pr-10 text-sm text-gray-700 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"/>
+          <button
+            type="button"
+            class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-gray-700">
+              <svg
+                class="w-4 h-4"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 20 20">
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 19l-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
               </svg>
-        </button>
-    </div>
-
-        <div v-for="(filter, index) in filters" :key="index" class="relative inline-block text-left ml-2">
-            <!-- 버튼 -->
-            <button id="filterButton" type="button"
-                    class=" flex flex-row items-center w-full h-8 border border-gray-300 shadow-sm pl-2 text-xs font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
-              <div> {{ filter }} </div>
-              <svg class="h-4 w-6 text-gray-800" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-              </svg>
-            </button>
-            <!-- 아이콘 -->
-            <div 
-              class="bg-white absolute z-10 w-[200px] h-[120px] top-10 left-0 border-2 border-gray-200"
-              v-if="isSliderVisible">
-              <RangeSlider
-                v-model="state.value"
-                style="width: 100%"
-                exponential
-                :max="1000000000">
-                <template #suffix>만원</template>
-              </RangeSlider>
-              <span>{{ state.value[0] }} 만원</span> - 
-              <span>{{ state.value[1] }} 만원</span>
-            </div>
+          </button>
         </div>
 
+      <div v-for="(filter, index) in filters" :key="index" class="relative inline-block text-left ml-2">
+        <!-- 버튼 -->
+        <button
+          type="button"
+          @click="toggleSlider(filter)"
+          class="flex flex-row items-center w-full h-8 border border-gray-300 shadow-sm pl-2 text-xs font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+          <div>{{ filter }}</div>
+          <svg
+            class="h-4 w-6 text-gray-800"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true">
+            <path
+              fill-rule="evenodd"
+              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+        <!-- 슬라이더 -->
+        <div
+          v-if="isSliderVisible === filter"
+          class="absolute z-10 w-[220px] top-10 left-0 border-2 border-gray-200 bg-white" >
+          <RangeSlider
+            v-model="state[filter]"
+            style="width: 100%"
+            exponential
+            :max="1000000000">
+            <template #suffix>만원</template>
+          </RangeSlider>
+          <div class="flex flex-row justify-end">
+            <button class="bg-blue-600 rounded-lg mb-2 mx-2 p-2 text-white text-xs" @click=applyFilter >
+              적용
+            </button>
+          </div>
+          <!-- <div class="flex flex-row justify-between bg-blue-400 px-4">
+            <span class="">{{ state[filter][0] }}만원</span>
+            <span class="">{{ state[filter][1] }}만원</span>
+          </div> -->
+        </div>
+      </div>
         <button type="button" class="relative inline-block text-left ml-2 h-8 px-2 py-2 bg-white border border-gray-300 shadow-sm focus:ring-indigo-500">
-          <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+          <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" @click="initFilter">
             <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
           </svg>
         </button>
@@ -325,30 +377,7 @@ const state = reactive({
           <!-- 목록 영역 추가할 수 있습니다 -->
           <div class="p-2 overflow-auto">
             <div class="text-center mt-2">
-      <!-- <span>최소: {{ state.value[0] }} 만원</span> - 
-      <span>최대: {{ state.value[1] }} 만원</span>
-
-      <span>최소: {{ state.value2[0] }} 만원</span> - 
-      <span>최대: {{ state.value2[1] }} 만원</span> -->
-      <!-- <RangeSlider
-      v-model="state.value"
-      style="width: 100%"
-      exponential
-      :max="1000000000"
-    >
-      <template #suffix>만원</template>
-    </RangeSlider> -->
-
-    <RangeSlider
-      v-model="state.value2"
-      style="width: 100%"
-      exponential
-      :max="1000000000"
-    >
-      <template #suffix>만원</template>
-    </RangeSlider>
-    </div>
-  
+          </div>
               <div v-for="house in houseInfos" :key="house.id">
                 <CardView
                 :id="house.id"
@@ -378,8 +407,6 @@ const state = reactive({
     </div>
   </div>
 </template>
-
-
 
 <style>
 .polygon-label {
