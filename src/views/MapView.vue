@@ -14,6 +14,7 @@ const polygons = ref([]); // 생성된 폴리곤 객체 배열
 const overlays = ref([]); // 생성된 오버레이 객체 배열
 const level = ref(12); // 현재 줌 레벨
 const detailMode = ref(""); // 어떤 경계를 보여줄지 (도, 시, 구)
+const isLoading = ref(true); // 로딩 상태 플래그
 
 const onLoadKakaoMap = async (mapRef) => {
   map.value = mapRef;
@@ -163,14 +164,26 @@ const houseInfoStore = useHouseInfoStore();
 
 // 데이터를 가져오는 함수
 const fetchData = async (type) => {
-  await houseInfoStore.fetchHouseInfo(type); // API 호출하여 데이터 가져오기
   console.log("동작!");
-  console.log(houseInfoStore.houseInfos); // store의 houseInfos 상태 출력
+  await houseInfoStore.fetchHouseInfo(type); // API 호출하여 데이터 가져오기
+  console.log("동작2");
+  
 };
 
 onMounted(async () => {
-  await fetchData("아파트"); // 데이터가 로딩된 후 실행
+  isLoading.value = false;
+  await fetchData("아파트"); // 데이터 로드
+  isLoading.value = true;
 });
+
+watch(
+  () => houseInfoStore.houseInfos,
+  (newValue) => {
+    console.log("houseInfos 상태 변경:", newValue); // 상태 변경 확인
+  },
+  { immediate: true } // 즉시 실행
+);
+
 
 // store에서 houseInfos 가져오기
 const houseInfos = computed(() => houseInfoStore.houseInfos);
@@ -320,8 +333,11 @@ watch(
           </div>
           <!-- 목록 영역 추가할 수 있습니다 -->
           <div class="p-2 overflow-auto">
+   
 
-              <div v-for="(house, index) in houseInfos" :key="index">
+
+
+              <div v-for="house in houseInfos" :key="house.id">
                 <CardView
                 :id="house.id"
                 :buildingUse="house.buildingUse"
@@ -332,6 +348,24 @@ watch(
                 :maxPropertyPrice="house.maxPropertyPrice"
               />
               </div>
+
+              <!-- <div v-if="isLoading">
+                데이터 로드 중...
+              </div>
+              <div v-else>
+                <div v-for="(house, index) in houseInfos" :key="index">
+                  <CardView
+                    :id="house.id"
+                    :buildingUse="house.buildingUse"
+                    :buildingName="house.buildingName"
+                    :districtName="house.districtName"
+                    :legalName="house.legalName"
+                    :minPropertyPrice="house.minPropertyPrice"
+                    :maxPropertyPrice="house.maxPropertyPrice"
+                  />
+                </div>
+              </div> -->
+
 
           </div>
         </div>

@@ -8,6 +8,7 @@ import IntroductionView from '@/views/IntroductionView.vue'
 import NoticeDetailView from '@/views/notice/NoticeDetailView.vue'
 import FaqDetailView from '@/views/notice/FaqDetailView.vue'
 import SignupView from '@/views/Signup/SignupView.vue'
+import MyPageView from '@/views/MyPageView.vue'
 
 const routes = [
   {
@@ -50,12 +51,15 @@ const routes = [
         name: 'signup',
         component: SignupView,
       },
-
-
       {
         path: 'introduction',
         name: 'introduction',
         component: IntroductionView,
+      },
+      {
+        path: 'mypage',
+        name: 'mypage',
+        component: MyPageView
       }
     ],
   },
