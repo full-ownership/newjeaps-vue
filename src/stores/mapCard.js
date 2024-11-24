@@ -26,5 +26,43 @@ export const useHouseInfoStore = defineStore('houseInfo', {
         console.log('데이터를 가져오는데 실패했습니다.', error);
       }
     },
+    
+    // 필터링된 데이터를 가져오는 메서드
+    async fetchFilteredHouseInfo({ 
+      buildingUse,
+      fromPrice,
+      toPrice,
+      // fromArea,
+      // toArea,
+      // fromConstructYear,
+      // toConstructYear,
+      // fromFloor,
+      // toFloor,
+     }) {
+      try {
+        // URL 쿼리 파라미터를 생성
+        const queryParams = new URLSearchParams({
+
+          buildingUse:buildingUse,
+          fromPrice: fromPrice?.toString() || '0', // 기본값 0
+          toPrice: toPrice?.toString() || '10000000', // 기본 최대값
+          // fromArea: fromArea?.toString() || '0', // 기본값 0
+          // toArea: toArea?.toString() || '100', // 기본 최대값
+        }).toString();
+
+        console.log("필터링된 데이터 호출 URL:", `/api/houseinfos/range?${queryParams}`);
+
+        // API 요청
+        const response = await apiClient.get(`/api/houseinfos/range?${queryParams}`);
+        this.houseInfos = response.data.data; // 데이터를 상태에 저장
+        console.log("필터링된 데이터:", response.data.data);
+      } catch (error) {
+        console.error('필터링된 데이터를 가져오는데 실패했습니다.', error);
+      }
+    },
+
+
+
+
   },
 });
