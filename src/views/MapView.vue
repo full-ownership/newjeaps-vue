@@ -9,7 +9,6 @@ import RangeSlider from "vue-simple-range-slider";
 import "vue-simple-range-slider/css";
 import { useRoute, useRouter } from 'vue-router';
 
-
 const map = ref(null); // Kakao Map 객체
 const polygons = ref([]); // 생성된 폴리곤 객체 배열
 const overlays = ref([]); // 생성된 오버레이 객체 배열
@@ -45,8 +44,13 @@ const onLoadKakaoMap = async (mapRef) => {
   map.value = mapRef;
   console.log("Kakao Map Loaded:", map.value);
 
+  // 초기 로딩 시 sido.json으로 도 경계선 로드
+  await init("/sido.json");
+
+
   // 초기 로딩 시 광역시/도 데이터 로드
   await loadPolygonData("/sido.json");
+
 
   // 줌 레벨 변경 이벤트
   kakao.maps.event.addListener(map.value, "zoom_changed", async () => {
@@ -237,17 +241,15 @@ const fetchData = async (type) => {
 };
 
 const route = useRoute();
-// params로 전달된 "param" 값
+console.log(`전달된 route`);
+console.log(route.params);
+console.log("Route query:", route.query);
 
 
-// 문자열로 변환된 buildingUse
-const buildingUse = route.params.param;
-
-console.log('전달된 파라미터:', buildingUse); // 디버깅용
 
 onMounted(async () => {
   isLoading.value = false;
-  await fetchData(buildingUse); // 데이터 로드
+  await fetchData(route.query); // 데이터 로드
   isLoading.value = true;
 });
 
@@ -259,10 +261,9 @@ watch(
   { immediate: true } // 즉시 실행
 );
 
-// store에서 houseInfos 가져오기
 const houseInfos = computed(() => houseInfoStore.houseInfos);
 
-// DOMContentLoaded 이벤트는 HTML 문서의 모든 콘텐츠가 완전히 로드되었을 때 발생함
+
 document.addEventListener("DOMContentLoaded", () => {
 
   const filterButton = document.getElementById("filterButton");
@@ -279,7 +280,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 const state = reactive({
-  가격: [0, 10000000], // 초기값
+  가격: [0, 10000000],
   면적: [0,200],
   사용승인일: [1990, 2024],
   층수: [0, 40],
@@ -309,7 +310,9 @@ const initFilter = () => {
     value[0] = 0;
     value[1] = 10000000;
     console.log(`${key}: ${value[0]} ~ ${value[1]}`);
-    //console.log(${value[0]})
+
+    //console.log(`${value[0]}`)
+
   }
 }
 const router = useRouter();
@@ -460,14 +463,14 @@ const navigateTo = (param) => {
           </div>
               <div v-for="house in houseInfos" :key="house.id">
                 <CardView
-                :id="house.id"
-                :buildingUse="house.buildingUse"
-                :buildingName="house.buildingName"
-                :districtName="house.districtName"
-                :legalName="house.legalName"
-                :minPropertyPrice="house.minPropertyPrice"
-                :maxPropertyPrice="house.maxPropertyPrice"
-              />
+                :imgUrl="house.imgUrl"
+                :buildingUse="house.buildingUses"
+                :id="house.aptSeq"
+                :buildingName="house.aptNm"
+                :districtName="house.gugunName"
+                :legalName="house.dongName"
+                :minPropertyPrice="house.minPrice"
+                :maxPropertyPrice="house.maxPrice"/>
               </div>
           </div>
         </div>
