@@ -6,7 +6,7 @@ import officetel from "@/assets/icons/officetel.png";
 import heart from "@/assets/icons/heart.png";
 import notice from "@/assets/icons/notice.png";
 import ChatbotButton from '@/Component/Chatbot/ChatbotButton.vue'
-
+import RecommendationList from '@/Component/Recommendation/RecommendationList.vue'
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -126,6 +126,7 @@ const goToMapView = (param) => {
       </div>
     </div>
   </div>
+  <RecommendationList />
   <ChatbotButton />
 </template>
 

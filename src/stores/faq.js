@@ -16,7 +16,7 @@ export const useFaqStore = defineStore("faq", {
   }),
 
   actions: {
-    // FAQ 목록 가져오기
+
     async fetchFaqs() {
       try {
         console.log("FAQ 데이터 요청 시작");

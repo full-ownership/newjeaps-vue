@@ -5,7 +5,7 @@
         <img alt="logo" src="@/assets/img/logo.png" class="w-24 -mr-1" @click="goToHome" />
       </div>
       <nav class="md:ml-auto flex flex-wrap items-center text-base justify-center">
-        <a @click="goToMapView('아파트')" href="" class="mr-5 hover:text-gray-900">지도</a>
+        <a @click="goToMapView({ buildingUse: '아파트', sidoName: '서울특별시', gugunName: '종로구' });"  class="mr-5 hover:text-gray-900">지도</a>
         <a @click="goToIntroductionView" class="mr-5 hover:text-gray-900">회사소개</a>
         <div>
       <div v-if="userStore.userInfos.data.nickname">
@@ -45,10 +45,18 @@ const goToLogin = () => {
 };
 
 const goToMapView = (param) => {
-  //console.log('mapView 등장')
-  console.log(param)
-  router.push({ name: 'map', params: {param} } );
-}
+
+  console.log('동작')
+
+  if (!param) {
+    console.error("param is not provided");
+    return;
+  }
+
+  console.log("Received param:", param);
+  // Router로 이동
+  router.push({ name: 'map', query: { ...param } });
+};
 
 const goToIntroductionView = () =>{
   router.push({name: 'introduction'})
@@ -60,9 +68,8 @@ const goToMyPage = () => {
 
 const userStore = useUserStore();
 
-// 컴포넌트가 마운트될 때 사용자 닉네임 가져오기
 onMounted(async () => {
-  await userStore.fetchUserInfo(); // 닉네임 가져오기
+  await userStore.fetchUserInfo();
   console.log(userStore.userInfos.data.nickname);
 });
 

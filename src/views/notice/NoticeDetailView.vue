@@ -26,7 +26,7 @@ onMounted(() => {
 
       <!-- 작성일 및 조회수 -->
       <div class="text-sm text-gray-500 flex justify-between items-center mb-6">
-        <p>작성일: <span class="font-medium">{{ noticeStore.noticeDetail?.createdAt }}</span></p>
+        <p>작성일: <span class="font-medium">{{  new Date(noticeStore.noticeDetail?.createdAt).toLocaleDateString() }}</span></p>
         <p>조회수: <span class="font-medium">{{ noticeStore.noticeDetail?.views }}</span></p>
       </div>
 
