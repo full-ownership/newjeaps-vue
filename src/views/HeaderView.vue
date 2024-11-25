@@ -68,9 +68,8 @@ const goToMyPage = () => {
 
 const userStore = useUserStore();
 
-// 컴포넌트가 마운트될 때 사용자 닉네임 가져오기
 onMounted(async () => {
-  await userStore.fetchUserInfo(); // 닉네임 가져오기
+  await userStore.fetchUserInfo();
   console.log(userStore.userInfos.data.nickname);
 });
 

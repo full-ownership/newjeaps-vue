@@ -57,7 +57,7 @@ const goToDetail = (noticeId) => {
           <p class="text-lg font-bold text-gray-900">{{ notice.title }}</p>
           <!-- 작성일 및 조회수 -->
           <div class="flex justify-between text-sm text-gray-500 mt-2">
-            <span>작성일: {{ notice.createdAt }}</span>
+            <span>작성일: {{ new Date(notice.createdAt).toLocaleDateString() }}</span>
             <span>조회수: {{ notice.views }}</span>
           </div>
         </div>
