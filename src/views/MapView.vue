@@ -216,9 +216,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const state = reactive({
   가격: [0, 10000000], // 초기값
-  면적: [0, 10000000],
+  면적: [0,200],
   사용승인일: [1990, 2024],
-  층수: [0, 33],
+  층수: [0, 40],
 });
 
 const isSliderVisible = ref(""); // 현재 열려 있는 슬라이더 필터 이름
@@ -228,12 +228,12 @@ const toggleSlider = (filter) => {
     // 이미 열려 있는 슬라이더를 클릭하면 닫음
     isSliderVisible.value = "";
   } else {
-    // 다른 슬라이더를 클릭하면 현재 슬라이더를 열고, 나머지는 닫음
     isSliderVisible.value = filter;
   }
 };
 
 const applyFilter = async() => {
+
   for (const [key, value] of Object.entries(state)) {
     console.log(`${key}: ${value[0]} ~ ${value[1]}`);
     //console.log(`${value[0]}`)
@@ -242,16 +242,14 @@ const applyFilter = async() => {
     buildingUse,
     fromPrice:state["가격"][0], // "가격"의 최소값
     toPrice:state["가격"][1],
-    //fromArea:state["면적"][0],
-    //toArea:state["면적"][1], // "가격"의 최대값
-    // fromConstructYear:state['사용승인일'][0],
-    // toConstructYear:state['사용승인일'][1],
-    // fromFloor:state['사용승인일'][0],
-    // toFloor:state['층수'][1],
+    fromArea:state["면적"][0],
+    toArea:state["면적"][1], // "가격"의 최대값
+    fromConstructYear:state['사용승인일'][0],
+    toConstructYear:state['사용승인일'][1],
+    fromFloor:state['층수'][0],
+    toFloor:state['층수'][1],
   };
-
   console.log("필터 파라미터:", filterParams);
-
    // Pinia store의 fetchFilteredHouseInfo 호출
    try {
     isLoading.value = true; // 로딩 시작
@@ -261,7 +259,6 @@ const applyFilter = async() => {
     console.error("필터 적용 중 에러:", error);
     isLoading.value = false; // 로딩 실패 시에도 종료
   }
-
   }
 };
 

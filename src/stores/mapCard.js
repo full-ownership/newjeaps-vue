@@ -32,22 +32,25 @@ export const useHouseInfoStore = defineStore('houseInfo', {
       buildingUse,
       fromPrice,
       toPrice,
-      // fromArea,
-      // toArea,
-      // fromConstructYear,
-      // toConstructYear,
+      fromArea,
+      toArea,
+      fromConstructYear,
+      toConstructYear,
       // fromFloor,
       // toFloor,
      }) {
       try {
         // URL 쿼리 파라미터를 생성
         const queryParams = new URLSearchParams({
-
           buildingUse:buildingUse,
           fromPrice: fromPrice?.toString() || '0', // 기본값 0
           toPrice: toPrice?.toString() || '10000000', // 기본 최대값
-          // fromArea: fromArea?.toString() || '0', // 기본값 0
-          // toArea: toArea?.toString() || '100', // 기본 최대값
+          fromArea: fromArea?.toString() || '0', // 기본값 0
+          toArea: toArea?.toString() || '100', // 기본 최대값
+          fromConstructYear: fromConstructYear?.toString() || '1990', // 기본 최대값
+          toConstructYear: toConstructYear?.toString() || '2024', // 기본 최대값
+          // fromFloor: fromFloor?.toString() || '0', // 기본 최대값
+          // toFloor: toFloor?.toString() || '40', // 기본 최대값
         }).toString();
 
         console.log("필터링된 데이터 호출 URL:", `/api/houseinfos/range?${queryParams}`);
