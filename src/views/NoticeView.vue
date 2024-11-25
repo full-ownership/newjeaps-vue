@@ -1,7 +1,7 @@
 <script setup>
 import TabBar from "@/Component/Notice/TabBar.vue";
 import MainInfo from "@/Component/Notice/MainInfo.vue";
-import NoticeList from "@/Component/Notice/NoticeList.vue";
+import NewsList from "@/Component/Notice/NewsList.vue";
 import FAQList from "@/Component/Notice/FAQList.vue";
 import { useNoticeStore } from "@/stores/notice";
 import { computed } from "vue";
@@ -12,7 +12,7 @@ const setActiveTab = store.setActiveTab;
 
 const tabs = [
   { id: "mainInfo", name: "공지사항" },
-  { id: "notice", name: "최신 뉴스" },
+  { id: "news", name: "최신 뉴스" },
   { id: "faq", name: "자주 묻는 질문" },
 ];
 </script>
@@ -31,8 +31,8 @@ const tabs = [
     </div>
 
     <!-- 공지사항 -->
-    <div v-else-if="activeTab === 'notice'" class="py-6">
-      <NoticeList />
+    <div v-else-if="activeTab === 'news'" class="py-6">
+      <NewsList />
     </div>
 
     <!-- 자주 묻는 질문 -->
