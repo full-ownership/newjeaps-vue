@@ -173,7 +173,7 @@ const fetchData = async (type) => {
 const route = useRoute();
 console.log(`전달된 route`);
 console.log(route.params);
-console.log("Route query:", route.query);   // 쿼리 확인
+console.log("Route query:", route.query);
 
 
 
@@ -193,7 +193,7 @@ watch(
 
 const houseInfos = computed(() => houseInfoStore.houseInfos);
 
-// DOMContentLoaded 이벤트는 HTML 문서의 모든 콘텐츠가 완전히 로드되었을 때 발생함
+
 document.addEventListener("DOMContentLoaded", () => {
 
   const filterButton = document.getElementById("filterButton");
