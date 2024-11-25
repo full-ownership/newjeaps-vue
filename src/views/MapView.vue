@@ -280,9 +280,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const state = reactive({
   가격: [0, 10000000], // 초기값
-  면적: [0, 10000000],
-  사용승인일: [0, 10000000],
-  층수: [0, 10000000],
+  면적: [0,200],
+  사용승인일: [1990, 2024],
+  층수: [0, 40],
 });
 
 const isSliderVisible = ref(""); // 현재 열려 있는 슬라이더 필터 이름
@@ -292,15 +292,15 @@ const toggleSlider = (filter) => {
     // 이미 열려 있는 슬라이더를 클릭하면 닫음
     isSliderVisible.value = "";
   } else {
-    // 다른 슬라이더를 클릭하면 현재 슬라이더를 열고, 나머지는 닫음
     isSliderVisible.value = filter;
   }
 };
 
-const applyFilter = () => {
+const applyFilter = async() => {
+
   for (const [key, value] of Object.entries(state)) {
     console.log(`${key}: ${value[0]} ~ ${value[1]}`);
-    //console.log(${value[0]})
+    //console.log(`${value[0]}`)
   }
 };
 
@@ -426,7 +426,9 @@ const navigateTo = (param) => {
             v-model="state[filter]"
             style="width: 100%"
             exponential
-            :max="1000000000">
+            :max="1000000"
+
+            >
             <template #suffix>만원</template>
           </RangeSlider>
           <div class="flex flex-row justify-end">

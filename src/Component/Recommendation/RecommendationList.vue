@@ -121,13 +121,11 @@ onUnmounted(() => {
         @click="prevSlide"
         class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white text-gray-700 shadow-md w-10 h-10 rounded-full flex justify-center items-center hover:bg-gray-100 transition"
       >
-        &#8249;
       </button>
       <button
         @click="nextSlide"
         class="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white text-gray-700 shadow-md w-10 h-10 rounded-full flex justify-center items-center hover:bg-gray-100 transition"
       >
-        &#8250;
       </button>
     </div>
   </div>
