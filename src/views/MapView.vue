@@ -191,7 +191,6 @@ watch(
   { immediate: true } // 즉시 실행
 );
 
-// store에서 houseInfos 가져오기
 const houseInfos = computed(() => houseInfoStore.houseInfos);
 
 // DOMContentLoaded 이벤트는 HTML 문서의 모든 콘텐츠가 완전히 로드되었을 때 발생함
@@ -211,7 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 const state = reactive({
-  가격: [0, 10000000], // 초기값
+  가격: [0, 10000000],
   면적: [0,200],
   사용승인일: [1990, 2024],
   층수: [0, 40],
