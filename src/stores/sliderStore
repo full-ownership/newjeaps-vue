@@ -1,0 +1,12 @@
+import { defineStore } from "pinia";
+
+export const useSliderStore = defineStore("slider", {
+  state: () => ({
+    range: [10, 1000], // 초기 최소/최대 값
+  }),
+  actions: {
+    updateRange(newRange) {
+      this.range = newRange;
+    },
+  },
+});
