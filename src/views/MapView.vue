@@ -4,11 +4,10 @@ import { ref, onMounted, computed, watch, reactive } from "vue";
 import axios from "axios";
 import { useHouseInfoStore } from "@/stores/mapCard";
 import CardView from "./CardView.vue";
-import Button from "@/Component/Button/Button.vue";
 import "vue-range-slider/dist/vue-range-slider.css";
 import RangeSlider from "vue-simple-range-slider";
 import "vue-simple-range-slider/css";
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 
 const map = ref(null); // Kakao Map 객체
@@ -169,7 +168,7 @@ const fetchData = async (type) => {
   console.log("동작!");
   await houseInfoStore.fetchHouseInfo(type); // API 호출하여 데이터 가져오기
   console.log("동작2");
-  
+
 };
 
 const route = useRoute();
@@ -246,18 +245,21 @@ const initFilter = () => {
     value[1] = 10000000;
     console.log(`${key}: ${value[0]} ~ ${value[1]}`);
     //console.log(`${value[0]}`)
-  } 
+  }
 }
+const router = useRouter();
+const navigateTo = (param) => {
+  router.push({ name: 'map', params: { param } }); // 이름과 params를 명확히 지정
+};
+
+
 
 </script>
 
 <template>
   <div class="flex flex-row items-center w-full h-[100vh] pt-20">
-    <!-- 버튼 영역 -->
-    <div class="bg-white w-20 h-full font-PretendardRegular text-xs border-r border-gray-200">
-
-      <Button></Button>
-
+    <!-- 버튼 영역 !-->
+    <!-- <div class="bg-white w-20 h-full font-PretendardRegular text-xs border-r border-gray-200">
       <div class="flex flex-col mx-auto mt-2 w-16 h-16 bg-white rounded-lg items-center justify-center text-gray-800 hover:bg-gray-100 active:bg-pink-100 cursor-pointer">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -285,7 +287,53 @@ const initFilter = () => {
         </svg>
         <p class="pt-1">오피스텔</p>
       </div>
+    </div>  -->
+    <!-- 버튼 영역 -->
+  <div class="bg-white w-20 h-full font-PretendardRegular text-xs border-r border-gray-200">
+    <!-- 아파트 버튼 -->
+    <div
+      class="flex flex-col mx-auto mt-2 w-16 h-16 bg-white rounded-lg items-center justify-center text-gray-800 hover:bg-gray-100 active:bg-pink-100 cursor-pointer"
+      @click="navigateTo('아파트')"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      <p class="pt-1">아파트</p>
     </div>
+
+    <!-- 연립 다세대 버튼 -->
+    <div
+      class="flex flex-col mx-auto mt-2 w-16 h-16 bg-blue-500 rounded-lg items-center justify-center text-white shadow-md active:shadow-lg cursor-pointer"
+      @click="navigateTo('연립다세대')"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      <p class="pt-1">연립 다세대</p>
+    </div>
+
+    <!-- 단독/다가구 버튼 -->
+    <div
+      class="flex flex-col mx-auto mt-2 w-16 h-16 bg-blue-500 rounded-lg items-center justify-center text-white shadow-md active:shadow-lg cursor-pointer"
+      @click="navigateTo('단독다가구')"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      <p class="pt-1">단독/다가구</p>
+    </div>
+
+    <!-- 오피스텔 버튼 -->
+    <div
+      class="flex flex-col mx-auto mt-2 w-16 h-16 bg-blue-500 rounded-lg items-center justify-center text-white shadow-md active:shadow-lg cursor-pointer"
+      @click="navigateTo('오피스텔')"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      <p class="pt-1">오피스텔</p>
+    </div>
+  </div>
 
     <!-- 지도 및 필터 영역 -->
     <div class="flex flex-col justify-start w-full h-full">
