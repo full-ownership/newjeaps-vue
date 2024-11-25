@@ -10,7 +10,6 @@ import RangeSlider from "vue-simple-range-slider";
 import "vue-simple-range-slider/css";
 import { useRoute } from 'vue-router';
 
-
 const map = ref(null); // Kakao Map 객체
 const polygons = ref([]); // 생성된 폴리곤 객체 배열
 const overlays = ref([]); // 생성된 오버레이 객체 배열
@@ -21,7 +20,6 @@ const isLoading = ref(true); // 로딩 상태 플래그
 const onLoadKakaoMap = async (mapRef) => {
   map.value = mapRef;
   console.log("Kakao Map Loaded:", map.value);
-
   // 초기 로딩 시 sido.json으로 도 경계선 로드
   await init("/sido.json");
 
@@ -169,21 +167,19 @@ const fetchData = async (type) => {
   console.log("동작!");
   await houseInfoStore.fetchHouseInfo(type); // API 호출하여 데이터 가져오기
   console.log("동작2");
-  
+
 };
 
 const route = useRoute();
-// params로 전달된 "param" 값
+console.log(`전달된 route`);
+console.log(route.params);
+console.log("Route query:", route.query);   // 쿼리 확인
 
 
-// 문자열로 변환된 buildingUse
-const buildingUse = route.params.param;
-
-console.log('전달된 파라미터:', buildingUse); // 디버깅용
 
 onMounted(async () => {
   isLoading.value = false;
-  await fetchData(buildingUse); // 데이터 로드
+  await fetchData(route.query); // 데이터 로드
   isLoading.value = true;
 });
 
@@ -268,7 +264,7 @@ const initFilter = () => {
     value[1] = 10000000;
     console.log(`${key}: ${value[0]} ~ ${value[1]}`);
     //console.log(`${value[0]}`)
-  } 
+  }
 }
 
 </script>
@@ -367,7 +363,7 @@ const initFilter = () => {
             style="width: 100%"
             exponential
             :max="1000000"
-            
+
             >
             <template #suffix>만원</template>
           </RangeSlider>
@@ -404,14 +400,14 @@ const initFilter = () => {
           </div>
               <div v-for="house in houseInfos" :key="house.id">
                 <CardView
-                :id="house.id"
-                :buildingUse="house.buildingUse"
-                :buildingName="house.buildingName"
-                :districtName="house.districtName"
-                :legalName="house.legalName"
-                :minPropertyPrice="house.minPropertyPrice"
-                :maxPropertyPrice="house.maxPropertyPrice"
-              />
+                :imgUrl="house.imgUrl"
+                :buildingUse="house.buildingUses"
+                :id="house.aptSeq"
+                :buildingName="house.aptNm"
+                :districtName="house.gugunName"
+                :legalName="house.dongName"
+                :minPropertyPrice="house.minPrice"
+                :maxPropertyPrice="house.maxPrice"/>
               </div>
           </div>
         </div>

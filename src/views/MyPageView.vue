@@ -26,7 +26,7 @@ const userInfoForm = reactive({
   email: '', // 이메일
 });
 
-// 저장 함수 (예: API 호출)
+// 저장 함수 (예: API 호출) ㅇㅇ
 const saveUserInfo = () => {
   console.log('저장된 정보:', userInfoForm);
   // API 호출 예제
