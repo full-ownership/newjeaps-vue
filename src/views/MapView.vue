@@ -4,20 +4,42 @@ import { ref, onMounted, computed, watch, reactive } from "vue";
 import axios from "axios";
 import { useHouseInfoStore } from "@/stores/mapCard";
 import CardView from "./CardView.vue";
-import Button from "@/Component/Button/Button.vue";
 import "vue-range-slider/dist/vue-range-slider.css";
 import RangeSlider from "vue-simple-range-slider";
 import "vue-simple-range-slider/css";
-import { useRoute } from 'vue-router';
-
+import { useRoute, useRouter } from 'vue-router';
 
 const map = ref(null); // Kakao Map 객체
 const polygons = ref([]); // 생성된 폴리곤 객체 배열
 const overlays = ref([]); // 생성된 오버레이 객체 배열
+const activePolygon = ref(null); // 현재 활성화된 폴리곤
 const level = ref(12); // 현재 줌 레벨
-const detailMode = ref(""); // 어떤 경계를 보여줄지 (도, 시, 구)
-const isLoading = ref(true); // 로딩 상태 플래그
+const detailMode = ref(""); // 현재 디테일 모드 ("do" 또는 "sig")
+const centerData = ref({}); // 센터 데이터를 저장할 객체
 
+// Center 데이터 로드
+const loadCenterData = async () => {
+  try {
+    const response = await axios.get("/center.json");
+    centerData.value = response.data;
+    console.log("Loaded center.json:", centerData.value);
+  } catch (error) {
+    console.error("Error loading center.json:", error);
+  }
+};
+const sigData = ref({}); // 시/군/구 경계 데이터 저장
+
+const loadSigData = async () => {
+  try {
+    const response = await axios.get("/sig.json");
+    sigData.value = response.data;
+    console.log("Loaded sig.json:", sigData.value);
+  } catch (error) {
+    console.error("Error loading sig.json:", error);
+  }
+};
+
+// Kakao Map 초기화 및 이벤트 바인딩
 const onLoadKakaoMap = async (mapRef) => {
   map.value = mapRef;
   console.log("Kakao Map Loaded:", map.value);
@@ -25,62 +47,89 @@ const onLoadKakaoMap = async (mapRef) => {
   // 초기 로딩 시 sido.json으로 도 경계선 로드
   await init("/sido.json");
 
+
+  // 초기 로딩 시 광역시/도 데이터 로드
+  await loadPolygonData("/sido.json");
+
+
+  // 줌 레벨 변경 이벤트
   kakao.maps.event.addListener(map.value, "zoom_changed", async () => {
     level.value = map.value.getLevel();
     console.log("Zoom level changed:", level.value);
 
-    // 줌 레벨 10 이상이면 도 경계 (sido.json)로 로드, 10 미만이면 시/구 경계 (sig.json)
-    if (level.value >= 10) {
-      if (detailMode.value !== "do") {
-        detailMode.value = "do";
-        removePolygon();  // 기존 폴리곤 제거
-        removeOverlays(); // 기존 오버레이 제거
-        await init("/sido.json");  // 도 경계로 변경
-      }
-    } else {
-      if (detailMode.value !== "sig") {
-        detailMode.value = "sig";
-        removePolygon();  // 기존 폴리곤 제거
-        removeOverlays(); // 기존 오버레이 제거
-        await init("/sig.json");  // 시/구 경계로 변경
-      }
+    if (level.value > 10 && detailMode.value !== "do") {
+      detailMode.value = "do";
+      removePolygon();
+      removeOverlays();
+      await loadPolygonData("/sido.json"); // 광역시/도 데이터 로드
+    } else if (level.value <= 10 && detailMode.value !== "sig") {
+      detailMode.value = "sig";
+      removePolygon();
+      removeOverlays();
+
+      // 시/군/구 데이터 로드 및 오버레이 추가
+      Object.entries(centerData.value).forEach(([areaName, areaData]) => {
+  if (areaData.districts) {
+    Object.entries(areaData.districts).forEach(([districtName, coords]) => {
+      console.log(`Adding overlay for district: ${districtName} at coords:`, coords);
+
+      const content = document.createElement("div");
+      content.innerHTML = `
+        <div style="padding:8px 16px; background:#fff; border:2px solid #5995ed; border-radius:25px; color:#5995ed; font-size:12px; font-weight:600; cursor:pointer;">
+          ${districtName}
+        </div>
+      `;
+
+      const districtOverlay = new kakao.maps.CustomOverlay({
+        position: new kakao.maps.LatLng(coords.lat, coords.lng),
+        content: content,
+        clickable: true, // 오버레이 클릭 가능 옵션 활성화
+        map: map.value,
+      });
+
+      overlays.value.push(districtOverlay);
+
+      // 오버레이 클릭 이벤트 디버깅
+      content.addEventListener("click", () => {
+        console.log(`${districtName} clicked!`);
+        const overlayPosition = new kakao.maps.LatLng(coords.lat, coords.lng);
+
+        // 맵 이동 및 줌 레벨 감소
+        map.value.panTo(overlayPosition);
+        map.value.setLevel(map.value.getLevel() - 2); // 줌 레벨 감소
+
+        // 기존 폴리곤 제거 후 새 폴리곤 생성
+        removePolygon();
+        displayDistrictPolygon(districtName, areaData.districts[districtName]);
+      });
+    });
+  }
+});
     }
   });
 };
 
-// 폴리곤 초기화 함수
-const init = async (path) => {
+// JSON 데이터 기반 폴리곤 초기화
+const loadPolygonData = async (path) => {
   try {
-    console.log("Fetching JSON from:", path);
     const response = await axios.get(path);
     const geojson = response.data;
 
-    console.log("Loaded JSON:", geojson);
-
-    // JSON 데이터를 기반으로 폴리곤 생성
     const areas = geojson.features.map((unit) => {
       const coordinates = unit.geometry.coordinates[0];
-      const name = unit.properties.SIG_KOR_NM; // 도 이름
-      const cd_location = unit.properties.SIG_CD;
-
-      const path = coordinates.map(
-        (coord) => new kakao.maps.LatLng(coord[1], coord[0])
-      );
-
-      return { name, path, location: cd_location };
+      const name = unit.properties.SIG_KOR_NM;
+      const path = coordinates.map((coord) => new kakao.maps.LatLng(coord[1], coord[0]));
+      return { name, path };
     });
 
-    console.log("Parsed Areas:", areas);
-
-    // 각 경계에 대해 폴리곤 생성 및 중앙에 오버레이 추가
-    areas.forEach(displayArea);
+    areas.forEach(displayPolygon);
   } catch (error) {
     console.error(`Error loading JSON from ${path}:`, error);
   }
 };
 
-// 폴리곤 생성 및 지도에 표시
-const displayArea = (area) => {
+// 폴리곤 생성 및 이벤트 등록
+const displayPolygon = (area) => {
   const polygon = new kakao.maps.Polygon({
     path: area.path,
     strokeWeight: 2,
@@ -93,70 +142,89 @@ const displayArea = (area) => {
   polygon.setMap(map.value);
   polygons.value.push(polygon);
 
-  console.log(`Polygon created for area: ${area.name}`);
+  const center = centerData.value[area.name]?.center;
 
-  // 중심 좌표 계산
-  const calculateCenter = (coordinates) => {
-    let totalLat = 0;
-    let totalLng = 0;
+  if (!center) return;
 
-    coordinates.forEach((coord) => {
-      totalLat += coord.getLat();
-      totalLng += coord.getLng();
-    });
-
-    const centerLat = totalLat / coordinates.length;
-    const centerLng = totalLng / coordinates.length;
-
-    return new kakao.maps.LatLng(centerLat + 0.1, centerLng); // 약간의 오프셋을 주어 정확한 중심을 맞춤
-  };
-
-  // 폴리곤의 중앙 좌표 계산
-  const center = calculateCenter(area.path);
-
-  // 오버레이 생성
-  const customOverlay = new kakao.maps.CustomOverlay({
-    position: center, // 오버레이 위치는 계산된 중심
-    content: `<div style="padding:8px 16px; background:#fff; border:2px solid #5995ed; border-radius:25px; color:#5995ed; font-size:14px; font-weight:600; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+  const overlay = new kakao.maps.CustomOverlay({
+    position: new kakao.maps.LatLng(center.lat, center.lng),
+    content: `<div style="padding:8px 16px; background:#fff; border:2px solid #5995ed; border-radius:25px; color:#5995ed; font-size:14px; font-weight:600;">
       ${area.name}
     </div>`,
     map: map.value,
   });
 
-  overlays.value.push(customOverlay); // 오버레이 배열에 추가
+  overlays.value.push(overlay);
 
-  // 이벤트 설정
+  // 폴리곤 및 오버레이 이벤트 등록
   kakao.maps.event.addListener(polygon, "mouseover", () => {
-    polygon.setOptions({ fillColor: "#5995ed" });
+    if (activePolygon.value !== polygon) {
+      polygon.setOptions({ fillColor: "#5995ed" });
+    }
   });
 
   kakao.maps.event.addListener(polygon, "mouseout", () => {
-    polygon.setOptions({ fillColor: "#fff" });
+    if (activePolygon.value !== polygon) {
+      polygon.setOptions({ fillColor: "#fff" });
+    }
   });
 
   kakao.maps.event.addListener(polygon, "click", () => {
     console.log(`${area.name} clicked!`);
-    if (map.value) {
-      // 중심 좌표로 지도 이동 및 줌 레벨 변경
-      map.value.panTo(center);
-      map.value.setLevel(map.value.getLevel() - 3); // 최소 레벨 1로 제한
-    } else {
-      console.error("Map object is not initialized.");
+    map.value.panTo(new kakao.maps.LatLng(center.lat, center.lng));
+    map.value.setLevel(9);
+
+    if (activePolygon.value) {
+      activePolygon.value.setOptions({ fillColor: "#fff" });
     }
+
+    activePolygon.value = polygon;
+    polygon.setOptions({ fillColor: "#ffcccb" });
   });
 };
 
-// 폴리곤 제거
+const displayDistrictPolygon = (name, coords) => {
+  console.log(`Creating polygon for district: ${name}`);
+  console.log(`Coordinates received:`, coords); // coords 디버깅
+
+  // coords가 올바른 배열인지 확인
+  if (!coords || !Array.isArray(coords) || coords.length === 0) {
+    console.error(`Invalid coordinates for district: ${name}`);
+    return;
+  }
+
+  // Kakao LatLng 객체로 변환
+  const path = coords.map(coord => new kakao.maps.LatLng(coord.lat, coord.lng));
+
+  const polygon = new kakao.maps.Polygon({
+    path,
+    strokeWeight: 2,
+    strokeColor: "#ff3333",
+    fillColor: "#ffcccb",
+    fillOpacity: 0.7,
+  });
+
+  polygon.setMap(map.value);
+  polygons.value.push(polygon);
+
+  console.log(`Polygon created for district: ${name}`);
+};
+
+// 폴리곤 및 오버레이 제거
 const removePolygon = () => {
   polygons.value.forEach((polygon) => polygon.setMap(null));
   polygons.value = [];
 };
 
-// 오버레이 제거
 const removeOverlays = () => {
   overlays.value.forEach((overlay) => overlay.setMap(null));
   overlays.value = [];
 };
+
+// Center 데이터 로드
+onMounted(async () => {
+  await loadCenterData();
+});
 
 // 필터 버튼
 const filters = ["가격", "면적", "사용승인일", "층수"];
@@ -169,21 +237,19 @@ const fetchData = async (type) => {
   console.log("동작!");
   await houseInfoStore.fetchHouseInfo(type); // API 호출하여 데이터 가져오기
   console.log("동작2");
-  
+
 };
 
 const route = useRoute();
-// params로 전달된 "param" 값
+console.log(`전달된 route`);
+console.log(route.params);
+console.log("Route query:", route.query);
 
 
-// 문자열로 변환된 buildingUse
-const buildingUse = route.params.param;
-
-console.log('전달된 파라미터:', buildingUse); // 디버깅용
 
 onMounted(async () => {
   isLoading.value = false;
-  await fetchData(buildingUse); // 데이터 로드
+  await fetchData(route.query); // 데이터 로드
   isLoading.value = true;
 });
 
@@ -195,10 +261,9 @@ watch(
   { immediate: true } // 즉시 실행
 );
 
-// store에서 houseInfos 가져오기
 const houseInfos = computed(() => houseInfoStore.houseInfos);
 
-// DOMContentLoaded 이벤트는 HTML 문서의 모든 콘텐츠가 완전히 로드되었을 때 발생함
+
 document.addEventListener("DOMContentLoaded", () => {
 
   const filterButton = document.getElementById("filterButton");
@@ -215,10 +280,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 const state = reactive({
-  가격: [0, 10000000], // 초기값
-  면적: [0, 10000000],
-  사용승인일: [0, 10000000],
-  층수: [0, 10000000],
+  가격: [0, 10000000],
+  면적: [0,200],
+  사용승인일: [1990, 2024],
+  층수: [0, 40],
 });
 
 const isSliderVisible = ref(""); // 현재 열려 있는 슬라이더 필터 이름
@@ -228,12 +293,12 @@ const toggleSlider = (filter) => {
     // 이미 열려 있는 슬라이더를 클릭하면 닫음
     isSliderVisible.value = "";
   } else {
-    // 다른 슬라이더를 클릭하면 현재 슬라이더를 열고, 나머지는 닫음
     isSliderVisible.value = filter;
   }
 };
 
-const applyFilter = () => {
+const applyFilter = async() => {
+
   for (const [key, value] of Object.entries(state)) {
     console.log(`${key}: ${value[0]} ~ ${value[1]}`);
     //console.log(`${value[0]}`)
@@ -245,47 +310,67 @@ const initFilter = () => {
     value[0] = 0;
     value[1] = 10000000;
     console.log(`${key}: ${value[0]} ~ ${value[1]}`);
+
     //console.log(`${value[0]}`)
-  } 
+
+  }
 }
+const router = useRouter();
+const navigateTo = (param) => {
+  router.push({ name: 'map', params: { param } }); // 이름과 params를 명확히 지정
+};
+
+
 
 </script>
 
 <template>
   <div class="flex flex-row items-center w-full h-[100vh] pt-20">
-    <!-- 버튼 영역 -->
-    <div class="bg-white w-20 h-full font-PretendardRegular text-xs border-r border-gray-200">
-
-      <Button></Button>
-
-      <div class="flex flex-col mx-auto mt-2 w-16 h-16 bg-white rounded-lg items-center justify-center text-gray-800 hover:bg-gray-100 active:bg-pink-100 cursor-pointer">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-        </svg>
-        <p class="pt-1">아파트</p>
-      </div>
-
-      <div class="flex flex-col mx-auto mt-2 w-16 h-16 bg-blue-500 rounded-lg items-center justify-center text-white shadow-md active:shadow-lg cursor-pointer">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-        </svg>
-        <p class="pt-1">연립 다세대</p>
-      </div>
-
-      <div class="flex flex-col mx-auto mt-2 w-16 h-16 bg-blue-500 rounded-lg items-center justify-center text-white shadow-md active:shadow-lg cursor-pointer">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-        </svg>
-        <p class="pt-1">단독/다가구</p>
-      </div>
-
-      <div class="flex flex-col mx-auto mt-2 w-16 h-16 bg-blue-500 rounded-lg items-center justify-center text-white shadow-md active:shadow-lg cursor-pointer">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-        </svg>
-        <p class="pt-1">오피스텔</p>
-      </div>
+  <div class="bg-white w-20 h-full font-PretendardRegular text-xs border-r border-gray-200">
+    <!-- 아파트 버튼 -->
+    <div
+      class="flex flex-col mx-auto mt-2 w-16 h-16 bg-white rounded-lg items-center justify-center text-gray-800 hover:bg-gray-100 active:bg-pink-100 cursor-pointer"
+      @click="navigateTo('아파트')"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      <p class="pt-1">아파트</p>
     </div>
+
+    <!-- 연립 다세대 버튼 -->
+    <div
+      class="flex flex-col mx-auto mt-2 w-16 h-16 bg-blue-500 rounded-lg items-center justify-center text-white shadow-md active:shadow-lg cursor-pointer"
+      @click="navigateTo('연립다세대')"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      <p class="pt-1">연립 다세대</p>
+    </div>
+
+    <!-- 단독/다가구 버튼 -->
+    <div
+      class="flex flex-col mx-auto mt-2 w-16 h-16 bg-blue-500 rounded-lg items-center justify-center text-white shadow-md active:shadow-lg cursor-pointer"
+      @click="navigateTo('단독다가구')"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      <p class="pt-1">단독/다가구</p>
+    </div>
+
+    <!-- 오피스텔 버튼 -->
+    <div
+      class="flex flex-col mx-auto mt-2 w-16 h-16 bg-blue-500 rounded-lg items-center justify-center text-white shadow-md active:shadow-lg cursor-pointer"
+      @click="navigateTo('오피스텔')"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      <p class="pt-1">오피스텔</p>
+    </div>
+  </div>
 
     <!-- 지도 및 필터 영역 -->
     <div class="flex flex-col justify-start w-full h-full">
@@ -344,7 +429,9 @@ const initFilter = () => {
             v-model="state[filter]"
             style="width: 100%"
             exponential
-            :max="1000000000">
+            :max="1000000"
+
+            >
             <template #suffix>만원</template>
           </RangeSlider>
           <div class="flex flex-row justify-end">
@@ -352,10 +439,6 @@ const initFilter = () => {
               적용
             </button>
           </div>
-          <!-- <div class="flex flex-row justify-between bg-blue-400 px-4">
-            <span class="">{{ state[filter][0] }}만원</span>
-            <span class="">{{ state[filter][1] }}만원</span>
-          </div> -->
         </div>
       </div>
         <button type="button" class="relative inline-block text-left ml-2 h-8 px-2 py-2 bg-white border border-gray-300 shadow-sm focus:ring-indigo-500">
@@ -380,14 +463,14 @@ const initFilter = () => {
           </div>
               <div v-for="house in houseInfos" :key="house.id">
                 <CardView
-                :id="house.id"
-                :buildingUse="house.buildingUse"
-                :buildingName="house.buildingName"
-                :districtName="house.districtName"
-                :legalName="house.legalName"
-                :minPropertyPrice="house.minPropertyPrice"
-                :maxPropertyPrice="house.maxPropertyPrice"
-              />
+                :imgUrl="house.imgUrl"
+                :buildingUse="house.buildingUses"
+                :id="house.aptSeq"
+                :buildingName="house.aptNm"
+                :districtName="house.gugunName"
+                :legalName="house.dongName"
+                :minPropertyPrice="house.minPrice"
+                :maxPropertyPrice="house.maxPrice"/>
               </div>
           </div>
         </div>
@@ -418,5 +501,9 @@ const initFilter = () => {
   color: #333;
   text-align: center;
   white-space: nowrap;
+}
+div {
+  pointer-events: auto; /* 오버레이가 클릭 가능하도록 */
+  z-index: 1000; /* 오버레이가 다른 요소 위에 표시되도록 */
 }
 </style>
