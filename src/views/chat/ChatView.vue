@@ -1,87 +1,34 @@
 <template>
-  <div class="min-h-screen flex flex-col bg-gray-100">
-    <header class="bg-blue-500 text-white py-4 shadow-md">
-      <div class="container mx-auto px-4">
-        <h1 class="text-center text-xl font-semibold">WebSocket Chat Room</h1>
+  <div class="fixed top-24 right-4 z-50 flex items-center justify-end">
+    <div class="bg-white rounded-lg shadow-lg w-80 p-6 relative">
+      <!-- 헤더 -->
+      <div class="flex justify-between items-center border-b pb-2 mb-4">
+        <h2 class="text-lg font-semibold">채팅</h2>
+        <button class="text-gray-700 hover:text-red-500" @click="disconnectChatRoom">X</button>
       </div>
-    </header>
-    <main class="flex-1 container mx-auto px-4 py-8">
-      <div class="bg-white p-6 rounded-lg shadow-md">
-        <!-- Region 입력 -->
-        <div class="mb-6">
-          <label class="block text-gray-700 font-medium mb-2">Region</label>
-          <div class="flex gap-4">
-            <input
-              v-model="region"
-              type="text"
-              class="flex-grow border rounded-lg px-4 py-2"
-              placeholder="Enter Region"
-            />
-            <button
-              @click="findOrCreateChatRoom"
-              class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
-            >
-              Find/Create Room
-            </button>
-          </div>
-        </div>
 
-        <div class="mb-6">
-          <label class="block text-gray-700 font-medium mb-2">Chat Room Info</label>
-          <div class="flex flex-wrap gap-4">
-            <input
-              v-model="chatRoomId"
-              type="text"
-              class="flex-grow border rounded-lg px-4 py-2"
-              placeholder="Chat Room ID"
-            />
-            <button
-              @click="connectChatRoom"
-              class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600"
-            >
-              Connect
-            </button>
-            <button
-              @click="disconnectChatRoom"
-              class="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600"
-            >
-              Disconnect
-            </button>
-          </div>
-        </div>
-
-        <!-- 메시지 입력 -->
-        <div class="mb-6">
-          <label class="block text-gray-700 font-medium mb-2">Message</label>
-          <div class="flex gap-4">
-            <input
-              v-model="messageContent"
-              type="text"
-              class="flex-grow border rounded-lg px-4 py-2"
-              placeholder="Enter Message"
-            />
-            <button
-              @click="sendMessage"
-              class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
-            >
-              Send Message
-            </button>
-          </div>
-        </div>
-
-        <!-- 메시지 출력 -->
-        <div class="mb-6 h-64 overflow-y-auto bg-gray-50 border rounded-lg p-4">
-          <h3 class="text-lg font-semibold text-gray-700 mb-4">Messages</h3>
-          <div v-if="messages.length === 0" class="text-gray-500">
-            No messages yet.
-          </div>
-          <div v-for="(msg, index) in messages" :key="index" class="mb-2">
-            <span class="font-medium text-blue-600">{{ msg.nickname || "User" }}</span>:
-            <span class="text-gray-700">{{ msg.content }}</span>
-          </div>
+      <!-- 메시지 목록 -->
+      <div class="mb-4 h-60 overflow-y-auto border rounded-lg p-2 bg-gray-50">
+        <div v-for="(message, index) in messages" :key="index" class="mb-2">
+          <span class="font-bold text-blue-600">[{{ message.sender }}]</span>
+          <span class="text-gray-700">{{ message.content }}</span>
         </div>
       </div>
-    </main>
+
+      <!-- 메시지 입력 -->
+      <textarea
+        v-model="messageContent"
+        class="w-full border rounded-lg p-2 mb-2"
+        rows="2"
+        placeholder="메시지를 입력하세요..."
+      ></textarea>
+      <button
+        class="bg-blue-600 text-white px-4 py-2 rounded-lg w-full"
+        @click="sendMessage"
+      >
+        메시지 보내기
+      </button>
+    </div>
   </div>
 </template>
 
@@ -89,15 +36,19 @@
 import axios from "axios";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
- // 서버 URL
 
 export default {
+  props: {
+    area: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
-      region: "", // 지역명
       chatRoomId: "", // 채팅방 ID
-      messageContent: "", // 전송할 메시지 내용
-      messages: [], // 수신된 메시지 목록
+      messageContent: "", // 전송할 메시지
+      messages: [], // 수신된 메시지
       stompClient: null, // STOMP 클라이언트
       isConnected: false, // 연결 상태
     };
@@ -105,109 +56,118 @@ export default {
   methods: {
     // 방 생성 또는 찾기
     async findOrCreateChatRoom() {
-      console.log("Starting findOrCreateChatRoom");
-      if (!this.region) {
-        console.error("Error: Region is required to find or create a chat room.");
+      if (!this.area) {
+        console.error("지역 정보가 필요합니다.");
         return;
       }
       try {
-        const response = await axios.get(`http://localhost:8080/api/chat/room/${this.region}`, {
+        const response = await axios.get(`http://localhost:8080/api/chat/room/${this.area}`, {
           withCredentials: true,
         });
-        console.log("API Response:", response.data);
         if (response.data?.data?.chatRoomId) {
           this.chatRoomId = response.data.data.chatRoomId;
-          console.log("Chat Room ID:", this.chatRoomId);
+          this.connectChatRoom(); // 방을 찾거나 생성 후 연결
         } else {
-          console.error("Error: Chat room not found or could not be created.");
+          console.error("채팅방을 찾거나 생성할 수 없습니다.");
         }
       } catch (error) {
-        console.error("Error while finding or creating a chat room:", error);
+        console.error("채팅방 요청 중 오류:", error);
       }
     },
 
+    // 채팅방 연결
     connectChatRoom() {
       if (!this.chatRoomId) {
-        console.error("Error: Chat Room ID is required to connect.");
+        console.error("채팅방 ID가 없습니다.");
         return;
       }
       if (this.isConnected) {
-        console.warn("Already connected to a chat room.");
+        console.warn("이미 연결된 상태입니다.");
         return;
       }
 
-      console.log(`Connecting to chat room: ${this.chatRoomId}...`);
-
-      const socket = new WebSocket("ws://localhost:8080/api/ws/chat");
+      const socket = new SockJS("http://localhost:8080/api/ws/chat");
       this.stompClient = Stomp.over(socket);
 
       this.stompClient.connect(
         {},
         (frame) => {
-          console.log("WebSocket connected:", frame);
+          console.log("WebSocket 연결 성공:", frame);
           this.isConnected = true;
 
-
+          // 채팅방 입장
           this.stompClient.send(`/app/room/${this.chatRoomId}/connect`, {}, JSON.stringify({}));
 
-          // 메시지 구독
+          // 메시지 수신
           this.stompClient.subscribe(`/topic/${this.chatRoomId}`, (message) => {
             const messageData = JSON.parse(message.body);
-            console.log("Message received:", messageData);
             this.showMessage(messageData);
           });
         },
         (error) => {
-          console.error("WebSocket connection error:", error);
+          console.error("WebSocket 연결 오류:", error);
         }
       );
     },
 
     // 메시지 전송
     sendMessage() {
-      if (!this.isConnected || !this.messageContent) {
-        console.error("Error: Connection required and message content cannot be empty.");
+      if (!this.isConnected || !this.messageContent.trim()) {
+        console.error("메시지를 전송하려면 연결 상태와 내용이 필요합니다.");
         return;
       }
 
       const message = {
-        content: this.messageContent, // 닉네임 없이 메시지 내용만 포함
+        content: this.messageContent.trim(),
+        sender: "사용자", // 실제 사용자 ID 또는 닉네임을 넣을 수 있음
       };
 
-      console.log("Sending message:", message);
-
       this.stompClient.send(`/app/room/${this.chatRoomId}/message`, {}, JSON.stringify(message));
-
-      this.messageContent = "";
+      this.messageContent = ""; // 메시지 초기화
     },
 
-    // WebSocket 연결 해제
+    // 채팅방 연결 해제
     disconnectChatRoom() {
       if (!this.isConnected || !this.stompClient) {
-        console.warn("No active connection to disconnect.");
+        console.warn("연결이 활성화되어 있지 않습니다.");
         return;
       }
 
-      console.log(`Disconnecting from chat room: ${this.chatRoomId}...`);
-
       this.stompClient.send(`/app/room/${this.chatRoomId}/disconnect`, {}, JSON.stringify({}));
-
       this.stompClient.disconnect(() => {
-        console.log("Disconnected from WebSocket.");
+        console.log("WebSocket 연결 해제됨");
         this.isConnected = false;
         this.stompClient = null;
+        this.$emit("close"); // 모달 닫기 이벤트 호출
       });
     },
 
-    // 메시지 출력
+    // 수신된 메시지 처리
     showMessage(messageData) {
-      console.log("Displaying message:", messageData);
       this.messages.push(messageData);
     },
+  },
+
+  mounted() {
+    this.findOrCreateChatRoom(); // 컴포넌트가 로드되면 채팅방 생성/연결
+  },
+
+  beforeUnmount() {
+    this.disconnectChatRoom(); // 컴포넌트가 파괴되기 전에 WebSocket 연결 해제
   },
 };
 </script>
 
-<style>
-/* Tailwind 스타일 */
+<style scoped>
+/* 모달을 화면 오른쪽 위에 고정 */
+.fixed {
+  position: fixed;
+  z-index: 1000; /* Z축을 높게 설정 */
+}
+.top-24 {
+  top: 6rem; /* 약 96px 아래로 이동 */
+}
+.right-4 {
+  right: 1rem; /* 오른쪽 간격 유지 */
+}
 </style>
