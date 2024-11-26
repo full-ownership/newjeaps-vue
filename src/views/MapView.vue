@@ -9,9 +9,6 @@ import RangeSlider from "vue-simple-range-slider";
 import "vue-simple-range-slider/css";
 import { useRoute, useRouter } from 'vue-router';
 import BarChart from "@/Component/BarChart.vue";
-
-<<<<<<< HEAD
-=======
 import SearchNearByOliveYoung from "@/Component/SearchNearBy/SearchNearByOliveYoung.vue";
 import SearchNearByMcDonald from "@/Component/SearchNearBy/SearchNearByMcDonald.vue";
 import SearchNearByPharmacy from "@/Component/SearchNearBy/SearchNearByPharmacy.vue";
@@ -21,7 +18,6 @@ const goChat = (house) => {
   console.log("채팅버튼 선택")
   console.log(house.aptNm)
 }
->>>>>>> 8e5b8bc51a70d63391fb8b99320878124c5719e3
 
 
 
@@ -483,10 +479,6 @@ const selectKeyword = (name) =>{
   searchQuery.value=name
 }
 
-const goChat = (house) => {
-  console.log("채팅버튼 선택")
-  console.log(house.aptNm)
-}
 
 
 
@@ -645,11 +637,6 @@ const closeChat = () => {
         </button>
       </div>
       <!-- 리스트와 지도 영역 -->
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 8e5b8bc51a70d63391fb8b99320878124c5719e3
       <div class="flex h-full font-Pretendard text-gray-600 z-10">
         <div class="flex flex-col h-full rounded-lg">
           <!-- 목록 영역 추가할 수 있습니다 -->
