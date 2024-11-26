@@ -19,7 +19,6 @@ defineProps({
 // 랜덤 이미지를 설정하는 변수
 const randomImg = new URL(`../assets/img/home/home (${Math.floor(Math.random() * 21) + 1}).jpeg`, import.meta.url).href;
 
-console.log(randomImg)
 </script>
 
 <style scoped>
