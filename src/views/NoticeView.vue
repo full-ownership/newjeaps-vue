@@ -1,7 +1,7 @@
 <script setup>
 import TabBar from "@/Component/Notice/TabBar.vue";
 import MainInfo from "@/Component/Notice/MainInfo.vue";
-import NoticeList from "@/Component/Notice/NoticeList.vue";
+import NewsList from "@/Component/Notice/NewsList.vue";
 import FAQList from "@/Component/Notice/FAQList.vue";
 import { useNoticeStore } from "@/stores/notice";
 import { computed } from "vue";
@@ -32,7 +32,7 @@ const tabs = [
 
     <!-- 공지사항 -->
     <div v-else-if="activeTab === 'notice'" class="py-6">
-      <NoticeList />
+      <NewsList />
     </div>
 
     <!-- 자주 묻는 질문 -->
