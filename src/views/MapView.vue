@@ -10,10 +10,6 @@ import "vue-simple-range-slider/css";
 import { useRoute, useRouter } from 'vue-router';
 import BarChart from "@/Component/BarChart.vue";
 
-const goChat = (house) => {
-  console.log("채팅버튼 선택")
-  console.log(house.aptNm)
-}
 
 
 
@@ -486,6 +482,29 @@ const selectKeyword = (name) =>{
   searchQuery.value=name
 }
 
+const goChat = (house) => {
+  console.log("채팅버튼 선택")
+  console.log(house.aptNm)
+}
+
+
+
+import ChatModal from "@/Component/Chat/ChatModal.vue";
+
+const isChatViewVisible = ref(false);
+const selectedArea = ref("");
+
+const openChat = (area) => {
+  selectedArea.value = area;
+  console.log("레츠고")
+  console.log("openChat 실행됨, isChatViewVisible:", isChatViewVisible.value);
+  isChatViewVisible.value = true;
+};
+
+const closeChat = () => {
+  isChatViewVisible.value = false;
+  selectedArea.value = "";
+};
 
 
 </script>
@@ -616,7 +635,7 @@ const selectKeyword = (name) =>{
               </button>
             </div>
           </div>
-      
+
         </div>
         <!-- 필요한 필터 수 만큼 반복 -->
         <button type="button" class="relative inline-block text-left ml-2 h-8 px-2 py-2 bg-white border border-gray-300 shadow-sm focus:ring-indigo-500">
@@ -627,7 +646,7 @@ const selectKeyword = (name) =>{
       </div>
       <!-- 리스트와 지도 영역 -->
 
-          
+
       <div class="flex h-full font-Pretendard text-gray-600 z-10">
         <div class="flex flex-col h-full rounded-lg">
           <!-- 목록 영역 추가할 수 있습니다 -->
@@ -678,11 +697,12 @@ const selectKeyword = (name) =>{
                       <button @click="toggleHeart" class="heart-button ">
                         <img src="@/assets/icons/heart.svg" width="20px">
                       </button>
-                      <button class="pt-1">
-                        <img src="@/assets/icons/chat_icon.png" width="20px" @click=goChat(house)>
+                      <button class="pt-1" @click="openChat('강남구')">
+                        <img src="@/assets/icons/chat_icon.png" width="20px">
                       </button>
                     </div>
                   </div>
+
                   <div class="text-2xl text-center text-PretendardSemiBold text-gray-800">
                     <img :src="house.imgUrl" alt="House Image" class="h-autoshadow-md mt-1" />
                   </div>
@@ -774,9 +794,16 @@ const selectKeyword = (name) =>{
               </KakaoMapMarker>
             </div>
           </KakaoMap>
+
+
         </div>
       </div>
     </div>
+    <ChatModal
+  v-if="isChatViewVisible"
+  :area="selectedArea"
+  @close="closeChat"
+/>
   </div>
 </template>
 
