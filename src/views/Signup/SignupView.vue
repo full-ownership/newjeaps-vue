@@ -3,6 +3,19 @@ import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useRoute } from "vue-router"; // Vue Router 사용
 
+import apiClient from '@/api';
+// 사용자 정보 업데이트 API 함수
+
+const register = ()=> {
+  const data = {
+  email:email.value,
+  pwd:password.value,
+  name:name.value,
+  nickname:nickname.value}
+
+  return apiClient.post('/api/members/account', data);
+}
+
 // 데이터
 const email = ref("");
 const password = ref("");
@@ -47,6 +60,7 @@ const handleRegister = async () => {
       error.response?.data?.message || "회원가입 중 문제가 발생했습니다.";
   }
 };
+
 
 // 파일 업로드 처리
 const handleFileUpload = (event) => {
@@ -106,7 +120,7 @@ onMounted(() => {
   <div class="min-h-screen flex items-center justify-center bg-gray-50">
     <div class="w-full max-w-lg bg-white rounded shadow-lg p-8">
       <h1 class="text-2xl font-bold text-primary mb-6 text-center">회원가입</h1>
-      <form @submit.prevent="handleRegister" class="space-y-4">
+      <form @submit.prevent="register" class="space-y-4">
         <!-- 이메일 -->
         <div>
           <label for="email" class="block text-sm font-medium text-gray-700">
@@ -178,25 +192,11 @@ onMounted(() => {
           />
         </div>
 
-        <!-- 프로필 이미지 업로드 -->
-        <div>
-          <label for="profileImage" class="block text-sm font-medium text-gray-700">
-            프로필 이미지
-          </label>
-          <input
-            type="file"
-            id="profileImage"
-            @change="handleFileUpload"
-            accept="image/*"
-            class="mt-1 block w-full text-sm text-gray-700 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary"
-          />
-          <p class="mt-2 text-sm text-gray-500">{{ profileImageName }}</p>
-        </div>
-
         <!-- 제출 버튼 -->
         <button
           type="submit"
           class="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-primary-dark transition"
+          @click="register"
         >
           가입하기
         </button>

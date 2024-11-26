@@ -10,6 +10,13 @@ import "vue-simple-range-slider/css";
 import { useRoute, useRouter } from 'vue-router';
 import BarChart from "@/Component/BarChart.vue";
 
+const goChat = (house) => {
+  console.log("채팅버튼 선택")
+  console.log(house.aptNm)
+}
+
+
+
 const map = ref(null); // Kakao Map 객체
 const polygons = ref([]); // 생성된 폴리곤 객체 배열
 const overlays = ref([]); // 생성된 오버레이 객체 배열
@@ -17,6 +24,7 @@ const activePolygon = ref(null); // 현재 활성화된 폴리곤
 const level = ref(12); // 현재 줌 레벨
 const detailMode = ref(""); // 현재 디테일 모드 ("do" 또는 "sig")
 const centerData = ref({}); // 센터 데이터를 저장할 객체
+
 const clickedArea = ref("");
 
 // Center 데이터 로드
@@ -29,7 +37,6 @@ const loadCenterData = async () => {
     console.error("Error loading center.json:", error);
   }
 };
-
 const sigData = ref({}); // 시/군/구 경계 데이터 저장
 
 const loadSigData = async () => {
@@ -69,7 +76,7 @@ const onLoadKakaoMap = async (mapRef) => {
       Object.entries(centerData.value).forEach(([areaName, areaData]) => {
   if (areaData.districts) {
     Object.entries(areaData.districts).forEach(([districtName, coords]) => {
-      console.log(`Adding overlay for district: ${districtName} at coords:`, coords);
+      // console.log(`Adding overlay for district: ${districtName} at coords:`, coords);
 
       const content = document.createElement("div");
       content.innerHTML = `
@@ -89,17 +96,15 @@ const onLoadKakaoMap = async (mapRef) => {
 
       // 오버레이 클릭 이벤트 디버깅
       content.addEventListener("click", () => {
-        console.log(`${districtName} clicked!`);
-        const overlayPosition = new kakao.maps.LatLng(coords.lat, coords.lng);
+  console.log(`${districtName} clicked!`);
 
-        // 맵 이동 및 줌 레벨 감소
-        map.value.panTo(overlayPosition);
-        map.value.setLevel(map.value.getLevel() - 2); // 줌 레벨 감소
+  const overlayPosition = districtOverlay.getPosition(); // 오버레이의 위치 가져오기
 
-        // 기존 폴리곤 제거 후 새 폴리곤 생성
-        removePolygon();
-        displayDistrictPolygon(districtName, areaData.districts[districtName]);
-      });
+  map.value.setCenter(overlayPosition);
+
+// 줌 레벨 설정
+  map.value.setLevel(4); // 줌 레벨 설정
+});
     });
   }
 });
@@ -112,7 +117,6 @@ const loadPolygonData = async (path) => {
   try {
     const response = await axios.get(path);
     const geojson = response.data;
-
     const areas = geojson.features.map((unit) => {
       const coordinates = unit.geometry.coordinates[0];
       const name = unit.properties.SIG_KOR_NM;
@@ -153,6 +157,7 @@ const displayPolygon = (area) => {
   });
 
   overlays.value.push(overlay);
+  console.log(`Created overlay for ${area.name} with content:`, area.name);
 
   // 폴리곤 및 오버레이 이벤트 등록
   kakao.maps.event.addListener(polygon, "mouseover", () => {
@@ -168,24 +173,43 @@ const displayPolygon = (area) => {
   });
 
   kakao.maps.event.addListener(polygon, "click", () => {
-    console.log(`${area.name} clicked!`);
-    clickedArea.value = area.name;
-    console.log(`=================>${area.name}`)
-    map.value.panTo(new kakao.maps.LatLng(center.lat, center.lng));
-    map.value.setLevel(9);
+  console.log(`${area.name} clicked!`);
 
-    if (activePolygon.value) {
-      activePolygon.value.setOptions({ fillColor: "#fff" });
+  // 폴리곤 이름으로 오버레이 찾기
+  const overlay = overlays.value.find((o) => {
+    const overlayContent = o.getContent(); // HTML 노드 전체
+    if (!overlayContent) {
+      console.error(`Overlay content is undefined for area: ${area.name}`);
+      return false;
     }
 
-    activePolygon.value = polygon;
-    polygon.setOptions({ fillColor: "#ffcccb" });
+    // HTML 콘텐츠에서 텍스트 추출
+    const overlayText = overlayContent.innerText?.trim(); // innerText를 사용
+    console.log(`Checking overlay: "${overlayText}" against "${area.name}"`);
+    return overlayText === area.name; // 텍스트 비교
   });
+
+  if (overlay) {
+    const overlayPosition = overlay.getPosition(); // 오버레이의 위치 가져오기
+    console.log(`Setting center to overlay position: ${overlayPosition}`);
+    map.value.setCenter(overlayPosition); // 지도 중심 이동
+    map.value.setLevel(9); // 줌 레벨 설정
+  } else {
+    console.warn(`No overlay found for area: ${area.name}`);
+  }
+
+  // 폴리곤 색상 변경
+  if (activePolygon.value) {
+    activePolygon.value.setOptions({ fillColor: "#fff" });
+  }
+
+  activePolygon.value = polygon;
+  polygon.setOptions({ fillColor: "#ffcccb" });
+});
+
 };
 
 const displayDistrictPolygon = (name, coords) => {
-  console.log(`Creating polygon for district: ${name}`);
-  console.log(`Coordinates received:`, coords); // coords 디버깅
 
   // coords가 올바른 배열인지 확인
   if (!coords || !Array.isArray(coords) || coords.length === 0) {
@@ -207,7 +231,6 @@ const displayDistrictPolygon = (name, coords) => {
   polygon.setMap(map.value);
   polygons.value.push(polygon);
 
-  console.log(`Polygon created for district: ${name}`);
 };
 
 // 폴리곤 및 오버레이 제거
@@ -225,7 +248,6 @@ const removeOverlays = () => {
 onMounted(async () => {
   await loadCenterData();
 });
-
 // 필터 버튼
 const filters = ["가격", "면적", "사용승인일", "층수"];
 
@@ -241,7 +263,7 @@ const fetchData = async (params) => {
 };
 
 onMounted(async () => {
- 
+
   console.log(route.params);
   console.log("Route query:", route.query);
   console.log("onMounted 시작")
@@ -297,11 +319,11 @@ const toggleSlider = (filter) => {
 
 const applyFilter1 = async() => {
 
-  const query1 = { buildingUse: '아파트', 
+  const query1 = { buildingUse: '아파트',
                   fromArea: state.면적[0],
                   toArea:state.면적[1],
                    keyword:state.검색어 }
-  
+
   const queryString1 = new URLSearchParams(query1).toString();
   await fetchData(queryString1); // 데이터 로드
 };
@@ -344,7 +366,7 @@ const findDealsByAptseq = async (aptSeq) => {
   try {
     console.log(`Fetching deals for aptSeq: ${aptSeq}`);
     await houseInfoStore.fetchHouseDeals(aptSeq); // Pinia 스토어 호출
-    
+
   } catch (error) {
     console.error("거래 정보를 가져오는데 실패했습니다:", error);
   }
@@ -361,12 +383,12 @@ class TrieNode {
       this.isEndOfWord = false;
     }
   }
-  
+
   class Trie {
     constructor() {
       this.root = new TrieNode();
     }
-  
+
     insert(word) {
       let node = this.root;
       for (const char of word) {
@@ -377,7 +399,7 @@ class TrieNode {
       }
       node.isEndOfWord = true;
     }
-  
+
     search(prefix) {
       let node = this.root;
       for (const char of prefix) {
@@ -388,7 +410,7 @@ class TrieNode {
       }
       return this._collectWords(node, prefix);
     }
-  
+
     _collectWords(node, prefix) {
       const results = [];
       if (node.isEndOfWord) {
@@ -400,7 +422,7 @@ class TrieNode {
       return results;
     }
   }
-  
+
 const houseNames = ref([]);
 const searchQuery = ref("");
 const filteredNames = ref([]);
@@ -452,7 +474,7 @@ const updateSearchResults = () => {
         <!--검색 창-->
         <div class="relative w-[370px] ml-4 mr-2 ">
           <input
-            v-model="searchQuery" 
+            v-model="searchQuery"
             type="text"
             @input="updateSearchResults"
             placeholder="찾고자하는 아파트 이름을 입력하세요"
@@ -566,7 +588,7 @@ const updateSearchResults = () => {
             </div>
           </div>
         </div>
-        <!-- 필요한 필터 수 만큼 반복 -->        
+        <!-- 필요한 필터 수 만큼 반복 -->
         <button type="button" class="relative inline-block text-left ml-2 h-8 px-2 py-2 bg-white border border-gray-300 shadow-sm focus:ring-indigo-500">
           <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" @click="initFilter">
             <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
@@ -588,7 +610,7 @@ const updateSearchResults = () => {
               <div v-for="name in houseNames" :key="name.aptSeq">
                 {{ name.aptNm }}
               </div>
-          </div>    
+          </div>
               <div v-for="house in houseInfos" :key="house.id" >
                 <CardView
                 :jibun="house.jibun"
@@ -600,7 +622,7 @@ const updateSearchResults = () => {
                 :legalName="house.dongName"
                 :minPropertyPrice="house.minPrice"
                 :maxPropertyPrice="house.maxPrice"
-                @click="handleCardClick(house)" 
+                @click="handleCardClick(house)"
                 />
                 <!-- 오른쪽 뷰 -->
                 <div
@@ -625,7 +647,7 @@ const updateSearchResults = () => {
                         <img src="@/assets/icons/heart.svg" width="20px">
                       </button>
                       <button class="pt-1">
-                        <img src="@/assets/icons/chat_icon.png" width="20px">
+                        <img src="@/assets/icons/chat_icon.png" width="20px" @click=goChat(house)>
                       </button>
                     </div>
                   </div>
@@ -644,7 +666,7 @@ const updateSearchResults = () => {
                             {{ house.gugunName }}
                             {{ house.dongName }}
                             {{ house.jibun }}
-                          </span> 
+                          </span>
                           </div>
                     <div class="flex flex-row mb-2">
                       <div class = "flex flex-row mr-2 ">
@@ -676,7 +698,7 @@ const updateSearchResults = () => {
                     <span class="text-left text-lg font-PretendardSemiBold mt-4 border-b-4 px-2 py-1">
                     거래정보
                     </span>
-                 
+
                     <table class="min-w-full border-collapse border border-gray-200 mt-4">
                     <thead>
                       <tr class="bg-blue-100 text-sm">
@@ -697,8 +719,8 @@ const updateSearchResults = () => {
                     </tbody>
                   </table>
                   <div>
-                   
-                  </div> 
+
+                  </div>
                 </div>
               </div>
           </div>
@@ -714,7 +736,7 @@ const updateSearchResults = () => {
             style="width: 100%; height: 100%;"
             class="absolute z-0 ">
             <div v-for="house in houseInfos" :key="house.id">
-              <KakaoMapMarker 
+              <KakaoMapMarker
                 :lat="parseFloat(house.latitude)"
                 :lng="parseFloat(house.longitude)">
               </KakaoMapMarker>
