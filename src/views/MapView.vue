@@ -9,6 +9,10 @@ import RangeSlider from "vue-simple-range-slider";
 import "vue-simple-range-slider/css";
 import { useRoute, useRouter } from 'vue-router';
 import BarChart from "@/Component/BarChart.vue";
+import SearchNearByOliveYoung from "@/Component/SearchNearBy/SearchNearByOliveYoung.vue";
+import SearchNearByMcDonald from "@/Component/SearchNearBy/SearchNearByMcDonald.vue";
+import SearchNearByPharmacy from "@/Component/SearchNearBy/SearchNearByPharmacy.vue";
+import SearchNearByStarbucks from "@/Component/SearchNearBy/SearchNearByStarbucks.vue";
 
 const goChat = (house) => {
   console.log("채팅버튼 선택")
@@ -301,9 +305,7 @@ const state = reactive({
 });
 
 const search = () => {
-console.log(state.검색어)
-console.log('검색어')
-applyFilter1()
+  applyFilter()
  }
 
 const isSliderVisible = ref(""); // 현재 열려 있는 슬라이더 필터 이름
@@ -317,15 +319,13 @@ const toggleSlider = (filter) => {
   }
 };
 
-const applyFilter1 = async() => {
-
-  const query1 = { buildingUse: '아파트',
+const applyFilter = async() => {
+  const query = { buildingUse: '아파트',
                   fromArea: state.면적[0],
                   toArea:state.면적[1],
-                   keyword:state.검색어 }
-
-  const queryString1 = new URLSearchParams(query1).toString();
-  await fetchData(queryString1); // 데이터 로드
+                  keyword:state.검색어 }
+  const queryString = new URLSearchParams(query).toString();
+  await fetchData(queryString); // 데이터 로드
 };
 
 const initFilter = () => {
@@ -336,10 +336,10 @@ const initFilter = () => {
   }
 }
 const router = useRouter();
+
 const navigateTo = (param) => {
   router.push({ name: 'map', params: { param } }); // 이름과 params를 명확히 지정
 };
-
 
 //*상세 정보 불러오는 곳
 const selectedHouse = ref(null); // 반드시 ref로 선언
@@ -355,7 +355,6 @@ watch(
 const handleCardClick = (house) => {
   selectHouse(house); // 선택된 house 설정
   findDealsByAptseq(house.aptSeq); // aptSeq로 거래 정보 가져오기
-  console.log('불러온', houseInfoStore.houseDeals)
 };
 
 const selectHouse = (house) => {
@@ -364,7 +363,7 @@ const selectHouse = (house) => {
 
 const findDealsByAptseq = async (aptSeq) => {
   try {
-    console.log(`Fetching deals for aptSeq: ${aptSeq}`);
+    // console.log(`Fetching deals for aptSeq: ${aptSeq}`);
     await houseInfoStore.fetchHouseDeals(aptSeq); // Pinia 스토어 호출
 
   } catch (error) {
@@ -410,7 +409,6 @@ class TrieNode {
       }
       return this._collectWords(node, prefix);
     }
-
     _collectWords(node, prefix) {
       const results = [];
       if (node.isEndOfWord) {
@@ -435,53 +433,91 @@ onMounted(async () => {
   houseNames.value = Array.isArray(houseInfoStore.houseNames?.data)
   ? houseInfoStore.houseNames.data
   : [];
-
-  // 트라이에 이름 삽입
-  console.log("트라이가 생성전", trie);
-  console.log('houseNames.value의 타입:', Array.isArray(houseNames.value) ? '배열' : typeof houseNames.value);
-  console.log('houseNames.value의 타입:', Array.isArray(houseNames.value) ? '배열' : typeof houseNames.value);
   for (const name of houseInfoStore.houseNames) {
    if (name?.aptNm) { // aptNm이 존재하는지 확인
     trie.insert(name.aptNm);
-    console.log(`삽입된 이름: ${name.aptNm}`);
   } else {
     console.warn("aptNm이 없는 데이터:", name);
   }
   }
-
-  console.log("트라이가 생성되었습니다:", trie);
 });
 
-// 검색 처리
 const updateSearchResults = () => {
-  console.log('검색처리중')
-  if (!searchQuery.value || searchQuery.value.trim() === "") {
+  if (!searchQuery.value.trim()) {
     filteredNames.value = [];
-    console.log("검색어가 비어 있습니다.");
     return;
   }
 
-  filteredNames.value = trie.search(searchQuery.value.trim());
-  console.log("검색 결과:", JSON.stringify(filteredNames.value)); // 일치하는 결과 콘솔 출력
+  const results = [];
+  let node = trie.root;
+  const prefix = searchQuery.value.trim();
+
+  for (const char of prefix) {
+    if (!node.children[char]) {
+      filteredNames.value = []; // 검색어에 맞는 결과가 없으면 초기화
+      return;
+    }
+    node = node.children[char];
+  }
+
+  // 결과를 최대 5개까지만 수집
+  const collectWords = (currentNode, currentWord) => {
+    if (results.length >= 5) return; // 5개를 찾으면 종료
+    if (currentNode.isEndOfWord) {
+      results.push(currentWord);
+    }
+    for (const [char, childNode] of Object.entries(currentNode.children)) {
+      collectWords(childNode, currentWord + char);
+    }
+  };
+
+  collectWords(node, prefix);
+  filteredNames.value = results; // 결과 저장
 };
+
+const selectKeyword = (name) =>{
+  searchQuery.value=name
+}
+
+
+
+
+import ChatModal from "@/Component/Chat/ChatModal.vue";
+
+const isChatViewVisible = ref(false);
+const selectedArea = ref("");
+
+const openChat = (area) => {
+  selectedArea.value = area;
+  console.log("레츠고")
+  console.log("openChat 실행됨, isChatViewVisible:", isChatViewVisible.value);
+  isChatViewVisible.value = true;
+};
+
+const closeChat = () => {
+  isChatViewVisible.value = false;
+  selectedArea.value = "";
+};
+
+
 </script>
 <template>
   <div class="flex flex-row items-center w-full h-[100vh] overflow-hidden ">
     <!-- 지도 및 필터 영역 -->
-    <div class="flex flex-col justify-start w-full h-full mt-40">
+    <div class="relative flex flex-col justify-start w-full h-full mt-40">
       <!-- 필터 전체 버튼 -->
-      <div class="flex flex-row items-center py-4 h-14 border-b border-gray-200 z-100">
-        <!--검색 창-->
-        <div class="relative w-[370px] ml-4 mr-2 ">
+      <div class="flex flex-row items-center py-4 h-14 border-b border-gray-200 z-100 relative">
+         <!--검색 창-->
+        <div class="w-[370px] ml-4 mr-2 relative justify-center">
           <input
             v-model="searchQuery"
             type="text"
             @input="updateSearchResults"
             placeholder="찾고자하는 아파트 이름을 입력하세요"
-            class="absolute w-full h-8 px-4 pr-10 text-sm text-gray-700 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"/>
+            class="w-full  h-8 px-4 pr-10 text-sm text-gray-700 border border-gray-300 rounded-lg shadow-sm focus:outline-none "/>
           <button
             type="button"
-            class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-gray-700"
+            class="absolute flex justify-center right-0 top-2 px-3 text-gray-500 hover:text-gray-700"
             @click="search">
               <svg
                 class="w-4 h-4"
@@ -498,17 +534,21 @@ const updateSearchResults = () => {
               </svg>
           </button>
           <!-- 검색 결과 -->
-          <div v-if="filteredNames.length > 0" class="absolute bg-yellow-400 z-100">
-            <p>검색 결과:</p>
+        </div>
+     <!-- 검색 결과 -->
+        <div v-if="filteredNames.length > 0" class="absolute w-[360px] h-auto max-h-96 z-100 top-12 left-4 shadow-lg rounded-md border border-gray-300">
+          <!-- 결과 없음 메시지 -->
+          <div class="bg-white text-gray-700 px-4 py-2 font-semibold border-b border-gray-300">
             <ul>
-              <li v-for="(name, index) in filteredNames" :key="index">
-                {{ name }}
-              </li>
-            </ul>
+            <li v-for="(name, index) in filteredNames"
+              :key="index"
+              class="px-4 py-2 hover:bg-blue-100 cursor-pointer"
+              @click="selectKeyword(name)">
+              {{ name }}
+            </li>
+          </ul>
           </div>
-          <div v-else>
-            <p>일치하는 결과가 없습니다.</p>
-          </div>
+          <!-- 검색 결과 리스트 -->
         </div>
 
         <div class="relative inline-block text-left ml-2">
@@ -587,6 +627,7 @@ const updateSearchResults = () => {
               </button>
             </div>
           </div>
+
         </div>
         <!-- 필요한 필터 수 만큼 반복 -->
         <button type="button" class="relative inline-block text-left ml-2 h-8 px-2 py-2 bg-white border border-gray-300 shadow-sm focus:ring-indigo-500">
@@ -596,22 +637,23 @@ const updateSearchResults = () => {
         </button>
       </div>
       <!-- 리스트와 지도 영역 -->
-      <div class="flex flex-row h-full font-Pretendard text-gray-600 relaitvie">
+      <div class="flex h-full font-Pretendard text-gray-600 z-10">
         <div class="flex flex-col h-full rounded-lg">
-          <div class="flex flex-row p-2 text-s bg-blue-100">
-            <p class="mr-1 ml-2 cursor-pointer font-bold">인기순</p>
-            <p class="mr-1 cursor-pointer font-bold">가격순</p>
-            <p class="mr-1 cursor-pointer font-bold">면적순</p>
-            <FilterButton></FilterButton>
-          </div>
           <!-- 목록 영역 추가할 수 있습니다 -->
-          <div class="p-2 overflow-y-auto">
+          <div class="p-2 ">
+            <div class="flex flex-row p-2 text-s h-[24px] fixed bg-white z-20">
+              <p class="mr-1 ml-2 cursor-pointer font-bold">인기순</p>
+              <p class="mr-1 cursor-pointer font-bold">가격순</p>
+              <p class="mr-1 cursor-pointer font-bold">면적순</p>
+            </div>
             <div class="text-center ">
               <div v-for="name in houseNames" :key="name.aptSeq">
                 {{ name.aptNm }}
               </div>
-          </div>
-              <div v-for="house in houseInfos" :key="house.id" >
+            </div>
+
+            <div class="overflow-y-auto h-full mt-12 max-h-[80vh] bg-white">
+              <div v-for="house in houseInfos" :key="house.id" class="z-10 ">
                 <CardView
                 :jibun="house.jibun"
                 :imgUrl="house.imgUrl"
@@ -627,8 +669,9 @@ const updateSearchResults = () => {
                 <!-- 오른쪽 뷰 -->
                 <div
                   v-if="selectedHouse?.aptSeq === house.aptSeq"
-                  class="absolute z-100 top-300 left-300 bg-white p-6 shadow-lg transition duration-300 w-[360px] h-[100%] overflow-y-auto"
-                  style="left: 400px; top: 140px;">
+                  class="absolute z-100 top-[-100px] left-300 bg-white p-6 shadow-lg transition duration-300 w-[360px] h-[78%] overflow-y-auto
+                  rounded-md shadow-lg"
+                  style="left: 400px; top: 9vh;">
                   <div class="h-[30px] flex flex-row justify-end">
                     <button
                     class="text-gray-800 text-xs rounded h-[20px] w-[20px]"
@@ -646,11 +689,12 @@ const updateSearchResults = () => {
                       <button @click="toggleHeart" class="heart-button ">
                         <img src="@/assets/icons/heart.svg" width="20px">
                       </button>
-                      <button class="pt-1">
-                        <img src="@/assets/icons/chat_icon.png" width="20px" @click=goChat(house)>
+                      <button class="pt-1" @click="openChat('강남구')">
+                        <img src="@/assets/icons/chat_icon.png" width="20px">
                       </button>
                     </div>
                   </div>
+
                   <div class="text-2xl text-center text-PretendardSemiBold text-gray-800">
                     <img :src="house.imgUrl" alt="House Image" class="h-autoshadow-md mt-1" />
                   </div>
@@ -701,10 +745,10 @@ const updateSearchResults = () => {
 
                     <table class="min-w-full border-collapse border border-gray-200 mt-4">
                     <thead>
-                      <tr class="bg-blue-100 text-sm">
+                      <tr class="bg-blue-100 text-xs">
                         <th class="border border-gray-300 px-4 py-2 text-center">거래 일</th>
-                        <th class="border border-gray-300 px-4 py-2 text-center">면적</th>
-                        <th class="border border-gray-300 px-4 py-2 text-center">거래 금액</th>
+                        <th class="border border-gray-300 px-4 py-2 text-center">면적 (㎡)</th>
+                        <th class="border border-gray-300 px-4 py-2 text-center">거래 금액(만원)</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -712,17 +756,39 @@ const updateSearchResults = () => {
                         v-for="deal in houseInfoStore.houseDeals"
                         :key="deal.id"
                         class="odd:bg-gray-50 even:bg-white text-sm">
-                        <td class="border border-gray-300 px-4 py-2 text-center text-xs">{{ deal.dealYear }} 년 {{ deal.dealMonth }}월 {{ deal.dealDay }}일</td>
-                        <td class="border border-gray-300 px-4 py-2 text-center text-xs">{{ deal.excluUseAr}} ㎡</td>
-                        <td class="border border-gray-300 px-4 py-2 text-center text-xs">{{ deal.dealAmount}}만원</td>
+                        <td class="border border-gray-300 px-4 py-2 text-center text-xs">{{ deal.dealYear }}.{{ deal.dealMonth }}.{{ deal.dealDay }}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-center text-xs">{{ deal.excluUseAr}} </td>
+                        <td class="border border-gray-300 px-4 py-2 text-center text-xs">{{ deal.dealAmount}}</td>
                       </tr>
                     </tbody>
                   </table>
-                  <div>
+                  <div class="text-left text-lg font-PretendardSemiBold mt-4 mb-1 flex flex-row">
+                      <div class="text-sm border-b-4 px-2"> 반경 1km 편의시설</div>
+                    </div>
+                  <div class="flex flex-row justify-evenly space-x-4 p-2">
+                    <SearchNearByOliveYoung
+                    :longitude="parseFloat(house.longitude)"
+                    :latitude="parseFloat(house.latitude)"/>
 
+                    <SearchNearByMcDonald
+                    :longitude="parseFloat(house.longitude)"
+                    :latitude="parseFloat(house.latitude)"/>
+
+                    <SearchNearByPharmacy
+                    :longitude="parseFloat(house.longitude)"
+                    :latitude="parseFloat(house.latitude)"/>
+
+                    <SearchNearByStarbucks
+                    :longitude="parseFloat(house.longitude)"
+                    :latitude="parseFloat(house.latitude)"/>
+                  </div>
+
+                  <div>
                   </div>
                 </div>
               </div>
+              <!--여기 위치하기-->
+            </div>
           </div>
         </div>
         <!-- 지도 표시 영역 -->
@@ -742,9 +808,16 @@ const updateSearchResults = () => {
               </KakaoMapMarker>
             </div>
           </KakaoMap>
+
+
         </div>
       </div>
     </div>
+    <ChatModal
+  v-if="isChatViewVisible"
+  :area="selectedArea"
+  @close="closeChat"
+/>
   </div>
 </template>
 
