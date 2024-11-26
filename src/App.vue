@@ -3,9 +3,6 @@ import HeaderView from '@/views/HeaderView.vue'
 import FooterView from '@/views/FooterView.vue'
 import MainView from '@/views/MainView.vue'
 import ChatbotButton from './Component/Chatbot/ChatbotButton.vue'
-
-
-
 </script>
 
 <template>

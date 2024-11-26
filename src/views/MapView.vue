@@ -329,8 +329,8 @@ const applyFilter1 = async() => {
   
   const queryString1 = new URLSearchParams(query1).toString();
 
-
   await fetchData(queryString1); // 데이터 로드
+
 };
 
 const initFilter = () => {
@@ -338,9 +338,6 @@ const initFilter = () => {
     value[0] = 0;
     value[1] = 10000000;
     console.log(`${key}: ${value[0]} ~ ${value[1]}`);
-
-    //console.log(`${value[0]}`)
-
   }
 }
 const router = useRouter();
@@ -679,8 +676,6 @@ const updateSearchResults = () => {
 
         <!-- 지도 표시 영역 -->
         <div class="relative w-full bg-purple-100">
-         
-
           <!-- 카카오 맵 -->
           <KakaoMap
             :lat="36.866826"
