@@ -27,7 +27,7 @@ const randomImg = new URL(`../assets/img/home/home (${Math.floor(Math.random() *
 
 <template>
   <div class="w-[360px] mx-auto p-1 mb-1">
-    <div class="bg-white border-b-2 flex flex-row py-3">
+    <div class="bg-white border-b-1 border-gray-100 flex flex-row py-3">
         <!-- 이미지 섹션 -->
         <div class="bg-pink-100 w-28 h-28 mx-2">
         <!-- imgUrl이 있으면 imgUrl 사용, 없으면 randomImage -->
