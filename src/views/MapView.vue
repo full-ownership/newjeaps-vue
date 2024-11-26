@@ -479,6 +479,29 @@ const selectKeyword = (name) =>{
   searchQuery.value=name
 }
 
+const goChat = (house) => {
+  console.log("채팅버튼 선택")
+  console.log(house.aptNm)
+}
+
+
+
+import ChatModal from "@/Component/Chat/ChatModal.vue";
+
+const isChatViewVisible = ref(false);
+const selectedArea = ref("");
+
+const openChat = (area) => {
+  selectedArea.value = area;
+  console.log("레츠고")
+  console.log("openChat 실행됨, isChatViewVisible:", isChatViewVisible.value);
+  isChatViewVisible.value = true;
+};
+
+const closeChat = () => {
+  isChatViewVisible.value = false;
+  selectedArea.value = "";
+};
 
 
 

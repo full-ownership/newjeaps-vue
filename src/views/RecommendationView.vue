@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
  <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-100">
     <!-- 추천 폼 -->
@@ -292,4 +292,3 @@ export default {
     animation: slide-up 0.3s ease-out;
   }
   </style>
->>>>>>> 8e5b8bc51a70d63391fb8b99320878124c5719e3
