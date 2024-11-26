@@ -37,7 +37,7 @@ const saveUserInfo = () => {
 <template>
   <div class="container mx-auto flex flex-col justify-center items-center mt-24 vh-[100vh] pt-12 bg-white">
     <div class="h-[10%] w-full">
-      <h1 class="text-5xl font-Pretendard font-bold py-4 text-center">MY 다방</h1>
+      <h1 class="text-4xl font-Pretendard font-bold py-4 text-center">MY 뉴집스</h1>
     </div>
    <!-- 탭 메뉴 -->
     <div class="flex mt-6 border boder-[1px] border-gray-200">

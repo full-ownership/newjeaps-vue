@@ -27,7 +27,7 @@ const goToMapView = (param) => {
   <div class="flex bg-gray-100 h-[100vh] items-center justify-center
   ">
     <!-- 헤더 높이만큼 상단 패딩 추가 -->
-    <div class="w-[75vw] mx-auto flex flex-col  items-center p-12 ">
+    <div class="w-[75vw] mx-auto flex flex-col items-center pt-12 ">
       <!-- 서치바 영역 -->
       <form class="items-center max-w-lg mx-auto w-2/3 mb-10">
         <label for="simple-search" class="sr-only">Search</label>

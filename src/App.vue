@@ -11,7 +11,7 @@ import ChatbotButton from './Component/Chatbot/ChatbotButton.vue'
 <template>
   <div>
     <!-- <HeaderView /> -->
-    <HeaderView />
+    <HeaderView class="fixed z-50"/>
     <MainView />
 
   </div>
