@@ -1,0 +1,47 @@
+{
+  "name": "newjeaps",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --fix"
+  },
+  "dependencies": {
+    "@vueform/slider": "^2.1.10",
+    "aos": "^2.3.4",
+    "axios": "^1.7.7",
+    "chart.js": "^4.4.6",
+    "dotenv": "^16.4.5",
+    "font-awesome": "^4.7.0",
+    "fullpage.js": "^4.0.30",
+    "i": "^0.3.7",
+    "jquery": "^3.7.1",
+    "pinia": "^2.2.6",
+    "typed.js": "^2.1.0",
+    "vue": "^3.5.12",
+    "vue-chartjs": "^5.3.2",
+    "vue-fullpage.js": "^0.2.20",
+    "vue-range-slider": "^0.6.0",
+    "vue-router": "^4.4.5",
+    "vue-simple-range-slider": "^1.1.0",
+    "vue-typer": "^1.2.0",
+    "vue3-kakao-maps": "^2.3.10"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.14.0",
+    "@vitejs/plugin-vue": "^5.2.0",
+    "@vitejs/plugin-vue-jsx": "^4.0.1",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.14.0",
+    "eslint-plugin-vue": "^9.30.0",
+    "postcss": "^8.4.49",
+    "sass": "^1.81.0",
+    "sass-embedded": "^1.81.0",
+    "tailwindcss": "^3.4.15",
+    "vite": "^5.4.11",
+    "vite-plugin-vue-devtools": "^7.5.4"
+  }
+}
