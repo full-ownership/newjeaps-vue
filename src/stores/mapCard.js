@@ -73,7 +73,6 @@ export const useHouseInfoStore = defineStore('houseInfo', {
           console.log(endpoint)
           // API 호출
           const response = await apiClient.get(endpoint);
-    
           this.houseDeals = response.data.data; // 응답 데이터를 상태에 저장
           console.log("거래 정보 데이터:", response.data.data);
         } catch (error) {
@@ -84,12 +83,10 @@ export const useHouseInfoStore = defineStore('houseInfo', {
       async fetchHouseNames() {
         try {
           const endpoint = `/api/house-info/building-name`;
-          console.log('이름 가져오는 맵카드');
           console.log(endpoint)
           // API 호출
           const response = await apiClient.get(endpoint);
           this.houseNames = response.data.data; // 응답 데이터를 상태에 저장
-          console.log("이름데이터 ", response.data.data);
 
         } catch (error) {
           console.error("이름데이터를 가져오는데 실패했습니다:", error);
