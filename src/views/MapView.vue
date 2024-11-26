@@ -10,6 +10,18 @@ import "vue-simple-range-slider/css";
 import { useRoute, useRouter } from 'vue-router';
 import BarChart from "@/Component/BarChart.vue";
 
+<<<<<<< HEAD
+=======
+import SearchNearByOliveYoung from "@/Component/SearchNearBy/SearchNearByOliveYoung.vue";
+import SearchNearByMcDonald from "@/Component/SearchNearBy/SearchNearByMcDonald.vue";
+import SearchNearByPharmacy from "@/Component/SearchNearBy/SearchNearByPharmacy.vue";
+import SearchNearByStarbucks from "@/Component/SearchNearBy/SearchNearByStarbucks.vue";
+
+const goChat = (house) => {
+  console.log("채팅버튼 선택")
+  console.log(house.aptNm)
+}
+>>>>>>> 8e5b8bc51a70d63391fb8b99320878124c5719e3
 
 
 
@@ -297,8 +309,7 @@ const state = reactive({
 });
 
 const search = () => {
-console.log(state.검색어)
-applyFilter1()
+  applyFilter()
  }
 
 const isSliderVisible = ref(""); // 현재 열려 있는 슬라이더 필터 이름
@@ -312,13 +323,13 @@ const toggleSlider = (filter) => {
   }
 };
 
-const applyFilter1 = async() => {
-  const query1 = { buildingUse: '아파트',
+const applyFilter = async() => {
+  const query = { buildingUse: '아파트',
                   fromArea: state.면적[0],
                   toArea:state.면적[1],
-                   keyword:state.검색어 }
-  const queryString1 = new URLSearchParams(query1).toString();
-  await fetchData(queryString1); // 데이터 로드
+                  keyword:state.검색어 }
+  const queryString = new URLSearchParams(query).toString();
+  await fetchData(queryString); // 데이터 로드
 };
 
 const initFilter = () => {
@@ -329,6 +340,7 @@ const initFilter = () => {
   }
 }
 const router = useRouter();
+
 const navigateTo = (param) => {
   router.push({ name: 'map', params: { param } }); // 이름과 params를 명확히 지정
 };
@@ -347,7 +359,6 @@ watch(
 const handleCardClick = (house) => {
   selectHouse(house); // 선택된 house 설정
   findDealsByAptseq(house.aptSeq); // aptSeq로 거래 정보 가져오기
-  console.log('불러온', houseInfoStore.houseDeals)
 };
 
 const selectHouse = (house) => {
@@ -435,16 +446,6 @@ onMounted(async () => {
   }
 });
 
-// 검색 처리
-// const updateSearchResults = () => {
-//   console.log('검색처리중')
-//   if (!searchQuery.value || searchQuery.value.trim() === "") {
-//     filteredNames.value = [];
-//     console.log("검색어가 비어 있습니다.");
-//     return;
-//   }
-//   filteredNames.value = trie.search(searchQuery.value.trim());
-// };
 const updateSearchResults = () => {
   if (!searchQuery.value.trim()) {
     filteredNames.value = [];
@@ -558,7 +559,6 @@ const closeChat = () => {
           <!-- 검색 결과 리스트 -->
         </div>
 
-
         <div class="relative inline-block text-left ml-2">
         <!-- 버튼 -->
         <button
@@ -645,24 +645,28 @@ const closeChat = () => {
         </button>
       </div>
       <!-- 리스트와 지도 영역 -->
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 8e5b8bc51a70d63391fb8b99320878124c5719e3
       <div class="flex h-full font-Pretendard text-gray-600 z-10">
         <div class="flex flex-col h-full rounded-lg">
           <!-- 목록 영역 추가할 수 있습니다 -->
-          <div class="p-2 overflow-y-auto ">
-
-            <div class="flex flex-row p-2 text-s h-[24px] fixed bg-white-800 z-20">
+          <div class="p-2 ">
+            <div class="flex flex-row p-2 text-s h-[24px] fixed bg-white z-20">
               <p class="mr-1 ml-2 cursor-pointer font-bold">인기순</p>
               <p class="mr-1 cursor-pointer font-bold">가격순</p>
               <p class="mr-1 cursor-pointer font-bold">면적순</p>
             </div>
-            <div class="text-center">
+            <div class="text-center ">
               <div v-for="name in houseNames" :key="name.aptSeq">
                 {{ name.aptNm }}
               </div>
             </div>
-              <div v-for="house in houseInfos" :key="house.id" class="z-10">
+
+            <div class="overflow-y-auto h-full mt-12 max-h-[80vh] bg-white">
+              <div v-for="house in houseInfos" :key="house.id" class="z-10 ">
                 <CardView
                 :jibun="house.jibun"
                 :imgUrl="house.imgUrl"
@@ -678,8 +682,9 @@ const closeChat = () => {
                 <!-- 오른쪽 뷰 -->
                 <div
                   v-if="selectedHouse?.aptSeq === house.aptSeq"
-                  class="absolute z-100 top-300 left-300 bg-white p-6 shadow-lg transition duration-300 w-[360px] h-[100%] overflow-y-auto"
-                  style="left: 400px; top: 140px;">
+                  class="absolute z-100 top-[-100px] left-300 bg-white p-6 shadow-lg transition duration-300 w-[360px] h-[78%] overflow-y-auto
+                  rounded-md shadow-lg"
+                  style="left: 400px; top: 9vh;">
                   <div class="h-[30px] flex flex-row justify-end">
                     <button
                     class="text-gray-800 text-xs rounded h-[20px] w-[20px]"
@@ -753,10 +758,10 @@ const closeChat = () => {
 
                     <table class="min-w-full border-collapse border border-gray-200 mt-4">
                     <thead>
-                      <tr class="bg-blue-100 text-sm">
+                      <tr class="bg-blue-100 text-xs">
                         <th class="border border-gray-300 px-4 py-2 text-center">거래 일</th>
-                        <th class="border border-gray-300 px-4 py-2 text-center">면적</th>
-                        <th class="border border-gray-300 px-4 py-2 text-center">거래 금액</th>
+                        <th class="border border-gray-300 px-4 py-2 text-center">면적 (㎡)</th>
+                        <th class="border border-gray-300 px-4 py-2 text-center">거래 금액(만원)</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -764,17 +769,39 @@ const closeChat = () => {
                         v-for="deal in houseInfoStore.houseDeals"
                         :key="deal.id"
                         class="odd:bg-gray-50 even:bg-white text-sm">
-                        <td class="border border-gray-300 px-4 py-2 text-center text-xs">{{ deal.dealYear }} 년 {{ deal.dealMonth }}월 {{ deal.dealDay }}일</td>
-                        <td class="border border-gray-300 px-4 py-2 text-center text-xs">{{ deal.excluUseAr}} ㎡</td>
-                        <td class="border border-gray-300 px-4 py-2 text-center text-xs">{{ deal.dealAmount}}만원</td>
+                        <td class="border border-gray-300 px-4 py-2 text-center text-xs">{{ deal.dealYear }}.{{ deal.dealMonth }}.{{ deal.dealDay }}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-center text-xs">{{ deal.excluUseAr}} </td>
+                        <td class="border border-gray-300 px-4 py-2 text-center text-xs">{{ deal.dealAmount}}</td>
                       </tr>
                     </tbody>
                   </table>
-                  <div>
+                  <div class="text-left text-lg font-PretendardSemiBold mt-4 mb-1 flex flex-row">
+                      <div class="text-sm border-b-4 px-2"> 반경 1km 편의시설</div>
+                    </div>
+                  <div class="flex flex-row justify-evenly space-x-4 p-2">
+                    <SearchNearByOliveYoung
+                    :longitude="parseFloat(house.longitude)"
+                    :latitude="parseFloat(house.latitude)"/>
 
+                    <SearchNearByMcDonald
+                    :longitude="parseFloat(house.longitude)"
+                    :latitude="parseFloat(house.latitude)"/>
+
+                    <SearchNearByPharmacy
+                    :longitude="parseFloat(house.longitude)"
+                    :latitude="parseFloat(house.latitude)"/>
+
+                    <SearchNearByStarbucks
+                    :longitude="parseFloat(house.longitude)"
+                    :latitude="parseFloat(house.latitude)"/>
+                  </div>
+
+                  <div>
                   </div>
                 </div>
               </div>
+              <!--여기 위치하기-->
+            </div>
           </div>
         </div>
         <!-- 지도 표시 영역 -->
