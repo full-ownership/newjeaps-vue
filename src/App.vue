@@ -1,17 +1,16 @@
 <script setup>
 import HeaderView from '@/views/HeaderView.vue'
-import FooterView from '@/views/FooterView.vue'
 import MainView from '@/views/MainView.vue'
-import ChatbotButton from './Component/Chatbot/ChatbotButton.vue'
 </script>
 
 <template>
-  <div>
-    <!-- <HeaderView /> -->
-    <HeaderView class="fixed z-50"/>
-    <MainView />
-
+  <div class="relative">
+    <!-- <HeaderView  -->
+    <HeaderView class="left-1/2 transform -translate-x-1/2 z-100"/>
+    <!-- <MainView  -->
+    <MainView class="relative z-10"/>
   </div>
 </template>
+
 <style scoped>
 </style>
