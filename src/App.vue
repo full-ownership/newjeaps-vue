@@ -5,9 +5,7 @@ import MainView from '@/views/MainView.vue'
 
 <template>
   <div class="relative">
-    <!-- <HeaderView  -->
     <HeaderView class="left-1/2 transform -translate-x-1/2 z-100"/>
-    <!-- <MainView  -->
     <MainView class="relative z-10"/>
   </div>
 </template>
