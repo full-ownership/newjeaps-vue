@@ -52,10 +52,10 @@ watch(
 </script>
 
 <template>
-  <header class="h-20 font-PretendardRegular fixed inset-x-0 top-0 z-50 bg-white text-gray-700 body-font border-b border-gray-200
+  <header class="h-20 w-[100vw] font-PretendardRegular fixed inset-x-0 top-0 z-50 bg-white text-gray-700 body-font border-b border-gray-200
   flex justify-center items-center
   ">
-    <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
+    <div class="container w-[75%] mx-auto flex flex-wrap py-5 flex-col md:flex-row items-center">
       <div class="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
         <img alt="logo" src="@/assets/img/logo.png" class="w-24 -mr-1" @click="goToHome" />
       </div>

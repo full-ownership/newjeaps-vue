@@ -3,7 +3,7 @@
     <!-- Chat Toggle Button -->
     <button
   @click="toggleChat"
-  class="fixed bottom-6 right-6 w-16 h-16 rounded-full bg-white text-[#4A90E2] flex items-center justify-center shadow-[6px_6px_10px_rgba(0,0,0,0.2),-6px_-6px_10px_rgba(255,255,255,0.8)] hover:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,1)] transition-transform transform hover:scale-95"
+  class="fixed bottom-6 right-6 w-16 h-16 rounded-full bg-white text-[#4A90E2] flex items-center justify-center shadow-[0_10px_20px_rgba(0,0,128,0.5)] hover:shadow-[3px_3px_6px_rgba(0,0,0,0.3),-3px_-3px_6px_rgba(255,255,255,1)] transition-transform transform hover:scale-95"
 >
   <img src="@/assets/icons/chatbot.png" alt="챗봇 아이콘" class="w-10 h-10" />
 </button>
